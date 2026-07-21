@@ -1,0 +1,291 @@
+@import "tailwindcss";
+
+/* ==========================================================
+   GLOBAL RESET
+========================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow: hidden;
+  background: #0b1120;
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+/* ==========================================================
+   FORM ELEMENTS
+========================================================== */
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+textarea {
+  resize: none;
+}
+
+input,
+textarea,
+button {
+  outline: none;
+}
+
+/* Remove Edge password icons */
+
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+/* ==========================================================
+   SELECTION
+========================================================== */
+
+::selection {
+  background: rgb(124 58 237 / 40%);
+  color: white;
+}
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #475569 #0f172a;
+}
+
+/* ==========================================================
+   LINKS
+========================================================== */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ==========================================================
+   IMAGES
+========================================================== */
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ==========================================================
+   MARKDOWN
+========================================================== */
+
+.prose {
+  color: #e2e8f0;
+}
+
+.prose p {
+  margin: 0.9rem 0;
+  line-height: 1.8;
+}
+
+.prose strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.prose em {
+  color: #cbd5e1;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: white;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin: 0.35rem 0;
+}
+
+.prose hr {
+  border-color: #334155;
+}
+
+/* ==========================================================
+   INLINE CODE
+========================================================== */
+
+.prose code:not(pre code) {
+  background: #1e293b;
+  color: #a78bfa;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+/* ==========================================================
+   CODE BLOCK
+========================================================== */
+
+.prose pre {
+  background: #020617 !important;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background: transparent;
+  color: #f8fafc;
+  padding: 0;
+}
+
+/* ==========================================================
+   BLOCKQUOTE
+========================================================== */
+
+.prose blockquote {
+  border-left: 4px solid #7c3aed;
+  margin: 1.25rem 0;
+  padding-left: 1rem;
+  color: #cbd5e1;
+}
+
+/* ==========================================================
+   TABLE
+========================================================== */
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.prose table th,
+.prose table td {
+  border: 1px solid #334155;
+  padding: 0.75rem;
+}
+
+.prose table th {
+  background: #1e293b;
+  color: white;
+}
+
+.prose table td {
+  color: #cbd5e1;
+}
+
+/* ==========================================================
+   TRANSITIONS
+========================================================== */
+
+button,
+input,
+textarea {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
+}
+
+/* ==========================================================
+   FOCUS
+========================================================== */
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+/* ==========================================================
+   UTILITIES
+========================================================== */
+
+.glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+}
+
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #8b5cf6,
+    #6366f1,
+    #06b6d4
+  );
+  
+  -webkit-text-fill-color: transparent;
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+}
