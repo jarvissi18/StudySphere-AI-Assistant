@@ -190,7 +190,7 @@ Features include:
 ## 🧠 AI Flashcards
 
 <p align="center">
-<img src="docs/flashcards.png" width="900">
+<img src="docs/flashcard.png" width="900">
 </p>
 
 ---
