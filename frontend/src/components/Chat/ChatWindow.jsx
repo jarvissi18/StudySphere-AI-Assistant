@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import api from "../../services/api";
 
-import ChatHeader from "./ChatHeader";
 import WelcomeHero from "./WelcomeHero";
 import ChatInput from "./ChatInput";
 import ChatMessages from "./ChatMessages";
@@ -209,15 +208,7 @@ function ChatWindow({
       "
     >
 
-      {/* ================= Header ================= */}
-
-      <div className="shrink-0">
-
-        <ChatHeader
-    pdfCount={pdfCount}
-    />
-
-      </div>
+      
 
       {/* ================= Chat Area ================= */}
 

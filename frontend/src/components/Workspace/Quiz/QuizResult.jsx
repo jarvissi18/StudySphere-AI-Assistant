@@ -24,28 +24,27 @@ function QuizResult({
   const badge = getPerformanceBadge(accuracy);
 
   return (
-<div className="mx-auto max-w-3xl space-y-5">
+<div className="mx-auto max-w-3xl space-y-4">
       {/* ==========================================
           HERO CARD
       ========================================== */}
 
-      <div className="overflow-hidden rounded-3xl border border-slate-700 bg-[#172033] shadow-xl">
+      <div className="overflow-hidden rounded-2xl border border-slate-700 bg-[#172033] shadow-xl">
 
         {/* Header */}
 
-        <div className="border-b border-slate-700 bg-gradient-to-r from-violet-900/30 via-indigo-900/20 to-slate-900 px-6 py-7 text-center">
+        <div className="border-b border-slate-700 bg-gradient-to-r from-violet-900/30 via-indigo-900/20 to-slate-900 px-6 py-5 text-center">
 
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-violet-600/20 shadow-lg shadow-violet-900/30">
-
-            <Trophy className="h-8 w-8 text-yellow-400" />
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-violet-600/20 shadow-lg shadow-violet-900/30">
+            <Trophy className="h-7 w-7 text-yellow-400" />
 
           </div>
 
-          <h1 className="text-2xl font-bold tracking-tight text-white">
+          <h1 className="text-xl font-bold tracking-tight text-white">
             Quiz Completed
           </h1>
 
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-slate-400">
             Here's a summary of your quiz performance.
           </p>
 
@@ -55,18 +54,18 @@ function QuizResult({
             SCORE CIRCLE
         ========================================== */}
 
-<div className="flex justify-center py-4">
-          <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 shadow-[0_0_35px_rgba(124,58,237,0.35)]">
+<div className="flex justify-center py-3">
+          <div className="relative flex h-26 w-26 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 shadow-[0_0_35px_rgba(124,58,237,0.35)]">
 
-            <div className="absolute inset-2 rounded-full bg-[#172033]" />
+            <div className="absolute inset-1.5 rounded-full bg-[#172033]" />
 
             <div className="relative z-10 text-center">
 
-              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400">
+              <p className="text-[9px] uppercase tracking-[0.25em] text-slate-400">
                 Score
               </p>
 
-              <h2 className="mt-1 text-4xl font-bold text-white">
+              <h2 className="mt-1 text-3xl font-bold text-white">
                 {score}
               </h2>
 
@@ -94,7 +93,7 @@ function QuizResult({
 
           </div>
 
-          <div className="h-3 overflow-hidden rounded-full bg-slate-800">
+          <div className="h-2 overflow-hidden rounded-full bg-slate-800">
 
             <div
               className="h-full rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-500 transition-all duration-700"
@@ -111,10 +110,10 @@ function QuizResult({
             PERFORMANCE BADGE
         ========================================== */}
 
-        <div className="px-6 pt-6 pb-7 text-center">
+        <div className="px-6 pt-4 pb-5 text-center">
 
           <div
-            className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r ${badge.gradient} px-5 py-2 shadow-lg`}
+            className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r ${badge.gradient} px-4 py-1.5 shadow-lg`}
           >
 
             <Award size={18} />
@@ -125,7 +124,7 @@ function QuizResult({
 
           </div>
 
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-400">
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-400">
             {badge.description}
           </p>
 
@@ -135,11 +134,11 @@ function QuizResult({
             STATISTICS
         ========================================== */}
 
-        <div className="grid gap-3 p-3 grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-2 p-2 grid-cols-2 lg:grid-cols-4">
 
           {/* Correct */}
 
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-3 transition-all duration-300 hover:border-green-500">
+          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-2.5 transition-all duration-300 hover:border-green-500">
             <CheckCircle2 className="mb-3 h-6 w-6 text-green-400" />
 
             <p className="text-sm text-slate-400">
@@ -153,7 +152,7 @@ function QuizResult({
 
           {/* Wrong */}
 
-          <div className="rounded 2xl border border-slate-700 bg-slate-800 p-5 transition-all duration-300 hover:border-red-500">
+          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-3 transition-all duration-300 hover:border-red-500">
             <XCircle className="mb-3 h-6 w-6 text-red-400" />
 
             <p className="text-sm text-slate-400">
@@ -167,7 +166,7 @@ function QuizResult({
 
           {/* Total */}
 
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5 transition-all duration-300 hover:border-violet-500">
+          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-3 transition-all duration-300 hover:border-violet-500">
             <ListChecks className="mb-3 h-6 w-6 text-violet-400" />
 
             <p className="text-sm text-slate-400">
@@ -181,14 +180,14 @@ function QuizResult({
 
           {/* Accuracy */}
 
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5 transition-all duration-300 hover:border-blue-500">
+          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-3 transition-all duration-300 hover:border-blue-500">
             <Target className="mb-3 h-6 w-6 text-blue-400" />
 
             <p className="text-sm text-slate-400">
               Accuracy
             </p>
 
-            <h2 className="mt-2 text-3xl font-bold text-blue-400">
+            <h2 className="mt-2 text-2xl font-bold text-blue-400">
               {accuracy}%
             </h2>
           </div>
@@ -202,9 +201,9 @@ function QuizResult({
       ========================================== */}
 
       <div
-        className={`rounded-3xl bg-gradient-to-r ${badge.gradient} p-6 text-center shadow-xl`}
+        className={`rounded-3xl bg-gradient-to-r ${badge.gradient} p-4 text-center shadow-xl`}
       >
-        <h2 className="text-2xl font-bold text-white">
+        <h2 className="text-xl font-bold text-white">
           {badge.title}
         </h2>
 
@@ -217,7 +216,7 @@ function QuizResult({
           ACTION BUTTONS
       ========================================== */}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-2 md:grid-cols-2">
 
         <button
           onClick={() => setReviewMode(true)}
@@ -253,7 +252,7 @@ function QuizResult({
             items-center
             justify-center
             gap-2
-            rounded-2xl
+            rounded-xl
             border
             border-slate-700
             bg-slate-800
