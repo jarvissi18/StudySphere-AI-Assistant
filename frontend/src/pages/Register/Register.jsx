@@ -251,7 +251,8 @@ function Register() {
 
         <div className="flex w-full lg:w-[45%] items-center justify-center px-8">
 
-            <div className="w-full max-w-[560px] min-h-[760px] rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-3xl shadow-[0_0_50px_rgba(37,99,235,.15)] flex flex-col justify-center">          <div className="flex flex-col items-center">
+            <div className="w-full max-w-[560px] min-h-[760px] rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-3xl shadow-[0_0_50px_rgba(37,99,235,.15)] flex flex-col justify-start">         
+             <div className="flex flex-col items-center mb-8">
 
               <div className="mb-5 rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 p-4 shadow-xl shadow-blue-600/30">
 
@@ -295,7 +296,7 @@ function Register() {
 
             <form
               onSubmit={handleSubmit}
-              className="space-y-4"
+              className="space-y-4 flex-1"
             >
 
               {/* Full Name */}
@@ -378,10 +379,12 @@ function Register() {
               {/* Password Strength */}
 
               <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  formData.password ? "max-h-20 opacity-100 mt-2" : "max-h-20 opacity-0 mt-2"
+                className={`h-12 overflow-hidden transition-opacity duration-300 ${
+                formData.password
+                ? "opacity-100"
+                : "opacity-0"
                 }`}
-              >
+                >
                 <div className="space-y-2">
                   <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
                     <div
@@ -465,7 +468,7 @@ function Register() {
               {/* Password Match */}
 
               <div
-                className={`min-h-[24px] transition-all duration-300 ${
+                className={`h-6 transition-all duration-300 ${
                   formData.confirmPassword ? "opacity-100" : "opacity-0"
                 }`}
               >
