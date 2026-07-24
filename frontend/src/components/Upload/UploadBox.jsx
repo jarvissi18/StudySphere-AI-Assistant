@@ -88,7 +88,8 @@ function UploadBox({ onUploadSuccess }) {
 
       const response = await api.post("/upload", formData);
 
-      console.log(response.data);
+      console.log("SUCCESS RESPONSE:", response);
+      console.log("SUCCESS DATA:", response.data);
 
       setMessage("✅ PDF uploaded successfully.");
 
@@ -108,14 +109,27 @@ function UploadBox({ onUploadSuccess }) {
 
     }
 
-    catch (error) {
+          catch (error) {
 
-      console.error(error);
+        console.log("========== ERROR ==========");
 
-      setMessage("❌ Upload failed.");
+        console.log(error);
 
-    }
+        console.log(error.code);
 
+        console.log(error.message);
+
+        console.log(error.response);
+
+        console.log(error.response?.status);
+
+        console.log(error.response?.data);
+
+        setMessage(error.message);
+
+      }
+
+      
     finally {
 
       setLoading(false);
