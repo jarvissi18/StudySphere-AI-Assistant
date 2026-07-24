@@ -251,7 +251,7 @@ function Register() {
 
         <div className="flex w-full lg:w-[45%] items-center justify-center px-8">
 
-          <div className="w-full max-w-[560px] rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-3xl shadow-[0_0_50px_rgba(37,99,235,.15)]">            <div className="flex flex-col items-center">
+            <div className="w-full max-w-[560px] min-h-[760px] rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-3xl shadow-[0_0_50px_rgba(37,99,235,.15)] flex flex-col justify-center">          <div className="flex flex-col items-center">
 
               <div className="mb-5 rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 p-4 shadow-xl shadow-blue-600/30">
 
@@ -377,13 +377,15 @@ function Register() {
 
               {/* Password Strength */}
 
-              {formData.password && (
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  formData.password ? "max-h-20 opacity-100 mt-2" : "max-h-20 opacity-0 mt-2"
+                }`}
+              >
                 <div className="space-y-2">
-
-                  <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
-
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
                     <div
-                      className={`h-full transition-all duration-500 rounded-full ${
+                      className={`h-full rounded-full transition-all duration-500 ${
                         formData.password.length < 6
                           ? "w-1/4 bg-red-500"
                           : formData.password.length < 8
@@ -393,7 +395,6 @@ function Register() {
                           : "w-full bg-green-500"
                       }`}
                     />
-
                   </div>
 
                   <p
@@ -407,17 +408,18 @@ function Register() {
                         : "text-green-400"
                     }`}
                   >
-                    {formData.password.length < 6
-                      ? "Weak Password"
-                      : formData.password.length < 8
-                      ? "Fair Password"
-                      : formData.password.length < 12
-                      ? "Strong Password"
-                      : "Very Strong Password"}
+                    {formData.password
+                      ? formData.password.length < 6
+                        ? "Weak Password"
+                        : formData.password.length < 8
+                        ? "Fair Password"
+                        : formData.password.length < 12
+                        ? "Strong Password"
+                        : "Very Strong Password"
+                      : ""}
                   </p>
-
                 </div>
-              )}
+              </div>
 
               {/* Confirm Password */}
 
@@ -462,22 +464,25 @@ function Register() {
 
               {/* Password Match */}
 
-              {formData.confirmPassword && (
+              <div
+                className={`min-h-[24px] transition-all duration-300 ${
+                  formData.confirmPassword ? "opacity-100" : "opacity-0"
+                }`}
+              >
                 <p
                   className={`text-sm ${
-                    formData.password ===
-                    formData.confirmPassword
+                    formData.password === formData.confirmPassword
                       ? "text-green-400"
                       : "text-red-400"
                   }`}
                 >
-                  {formData.password ===
-                  formData.confirmPassword
-                    ? "✓ Passwords match"
-                    : "✗ Passwords do not match"}
+                  {formData.confirmPassword
+                    ? formData.password === formData.confirmPassword
+                      ? "✓ Passwords match"
+                      : "✗ Passwords do not match"
+                    : ""}
                 </p>
-              )}
-
+              </div>
               {/* Register Button */}
 
               <button
