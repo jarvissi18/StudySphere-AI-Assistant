@@ -169,27 +169,47 @@ async def upload_pdf(
     db.commit()
 
     # -----------------------------------------
-    # AI Processing
-    # -----------------------------------------
+# AI Processing
+# -----------------------------------------
 
-    start_time = time.time()
+start_time = time.time()
 
-    extracted_text = extract_text_from_pdf(file_path)
+print("========== STEP 1 ==========")
+print("Extracting PDF...")
 
-    chunks = chunk_text(extracted_text)
+extracted_text = extract_text_from_pdf(file_path)
 
-    embeddings = generate_embeddings(chunks)
+print("PDF Extracted")
 
-    store_chunks(
-        current_user.id,
-        file.filename,
-        chunks,
-        embeddings
-    )
+print("========== STEP 2 ==========")
+print("Chunking...")
 
-    end_time = time.time()
+chunks = chunk_text(extracted_text)
 
-    print(f"Processing Time: {end_time-start_time:.2f} sec")
+print(f"Chunks Created: {len(chunks)}")
+
+print("========== STEP 3 ==========")
+print("Generating Embeddings...")
+
+embeddings = generate_embeddings(chunks)
+
+print("Embeddings Generated")
+
+print("========== STEP 4 ==========")
+print("Storing in ChromaDB...")
+
+store_chunks(
+    current_user.id,
+    file.filename,
+    chunks,
+    embeddings
+)
+
+print("Stored Successfully")
+
+end_time = time.time()
+
+print(f"Processing Time: {end_time-start_time:.2f} sec")
 
     return {
         "success": True,

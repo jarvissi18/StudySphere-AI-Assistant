@@ -14,7 +14,7 @@ const API_URL =
 
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 60000,
+  timeout: 180000,
 });
 
 // =====================================================
