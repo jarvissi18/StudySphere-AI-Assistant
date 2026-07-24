@@ -17,6 +17,8 @@ const api = axios.create({
   timeout: 180000,
 });
 
+console.log("API Timeout =", api.defaults.timeout);
+
 // =====================================================
 // Automatically Attach JWT Token
 // =====================================================
