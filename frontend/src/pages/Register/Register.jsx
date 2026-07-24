@@ -251,7 +251,7 @@ function Register() {
 
         <div className="flex w-full lg:w-[45%] items-center justify-center px-8">
 
-            <div className="w-full max-w-[560px] min-h-[760px] rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-3xl shadow-[0_0_50px_rgba(37,99,235,.15)] flex flex-col justify-start">         
+            <div className="w-full max-w-[560px] rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-3xl shadow-[0_0_50px_rgba(37,99,235,.15)] flex flex-col justify-start">         
              <div className="flex flex-col items-center mb-8">
 
               <div className="mb-5 rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 p-4 shadow-xl shadow-blue-600/30">
