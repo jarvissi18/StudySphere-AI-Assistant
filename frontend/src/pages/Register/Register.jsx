@@ -376,7 +376,7 @@ function Register() {
 
               </div>
 
-              {/* Password Strength */}
+              {/* Password Strength
 
               <div
                 className={`h-12 overflow-hidden transition-opacity duration-300 ${
@@ -422,7 +422,7 @@ function Register() {
                       : ""}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               {/* Confirm Password */}
 
@@ -465,7 +465,7 @@ function Register() {
 
               </div>
 
-              {/* Password Match */}
+              {/* Password Match
 
               <div
                 className={`h-6 transition-all duration-300 ${
@@ -485,7 +485,8 @@ function Register() {
                       : "✗ Passwords do not match"
                     : ""}
                 </p>
-              </div>
+              </div> */}
+              
               {/* Register Button */}
 
               <button
