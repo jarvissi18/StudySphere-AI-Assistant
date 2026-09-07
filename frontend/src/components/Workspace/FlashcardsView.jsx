@@ -1,23 +1,29 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
 import {
   Brain,
-  Sparkles,
-  Copy,
-  Download,
-  RotateCcw,
-  Layers3,
-  GraduationCap,
-  Loader2,
-  RefreshCw,
-  Shuffle,
+  Check,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Copy,
+  Download,
+  FileText,
+  GraduationCap,
+  Layers3,
+  Lightbulb,
+  Loader2,
+  RefreshCw,
+  RotateCcw,
+  Shuffle,
+  Sparkles,
+  Target,
+  X,
 } from "lucide-react";
 
 import { generateFlashcards } from "../../services/api";
 
 function FlashcardsView() {
-
   const [flashcards, setFlashcards] = useState([]);
   const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,567 +31,970 @@ function FlashcardsView() {
 
   const [currentCard, setCurrentCard] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  // ==========================================
-  // Generate Flashcards
-  // ==========================================
+  const card = flashcards[currentCard] || null;
+
+  const progress = useMemo(() => {
+    if (!flashcards.length) return 0;
+    return ((currentCard + 1) / flashcards.length) * 100;
+  }, [currentCard, flashcards.length]);
+
+  const answeredPosition = currentCard + 1;
 
   const handleGenerateFlashcards = async () => {
-
     try {
-
       setLoading(true);
       setError("");
+      setCopied(false);
 
       const response = await generateFlashcards({
         topic: "",
       });
 
-      if (!response.success) {
-
+      if (!response?.success) {
         setFlashcards([]);
         setSources([]);
-
-        setError(response.message);
-
+        setError(
+          response?.message ||
+            "Unable to generate flashcards."
+        );
         return;
       }
 
-      setFlashcards(response.flashcards || []);
-      setSources(response.sources || []);
+      const generatedCards = Array.isArray(response.flashcards)
+        ? response.flashcards.filter(
+            (item) =>
+              item &&
+              typeof item.question === "string" &&
+              typeof item.answer === "string"
+          )
+        : [];
 
+      setFlashcards(generatedCards);
+      setSources(
+        Array.isArray(response.sources)
+          ? response.sources
+          : []
+      );
       setCurrentCard(0);
       setFlipped(false);
-
     } catch (err) {
+      console.error("[FLASHCARDS GENERATION ERROR]", err);
 
-      console.error(err);
-
+      setFlashcards([]);
+      setSources([]);
       setError(
         "Unable to generate flashcards. Please try again."
       );
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
-  // ==========================================
-  // Navigation
-  // ==========================================
-
   const nextCard = () => {
+    if (!flashcards.length) return;
 
     if (currentCard < flashcards.length - 1) {
-
-      setCurrentCard(currentCard + 1);
+      setCurrentCard((prev) => prev + 1);
       setFlipped(false);
-
+      setCopied(false);
     }
-
   };
 
   const previousCard = () => {
-
     if (currentCard > 0) {
-
-      setCurrentCard(currentCard - 1);
+      setCurrentCard((prev) => prev - 1);
       setFlipped(false);
-
+      setCopied(false);
     }
-
   };
-
-  // ==========================================
-  // Shuffle
-  // ==========================================
 
   const shuffleCards = () => {
-
-    if (flashcards.length === 0) return;
-
-    const shuffled = [...flashcards].sort(
-      () => Math.random() - 0.5
-    );
-
-    setFlashcards(shuffled);
-
-    setCurrentCard(0);
-    setFlipped(false);
-
-  };
-
-  // ==========================================
-  // Copy Current Card
-  // ==========================================
-
-  const copyCard = async () => {
-
     if (!flashcards.length) return;
 
-    const card = flashcards[currentCard];
+    const shuffled = [...flashcards];
 
-    await navigator.clipboard.writeText(
-      `Q: ${card.question}\n\nA: ${card.answer}`
-    );
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(
+        Math.random() * (index + 1)
+      );
 
-    alert("Flashcard copied successfully.");
+      [shuffled[index], shuffled[randomIndex]] = [
+        shuffled[randomIndex],
+        shuffled[index],
+      ];
+    }
 
+    setFlashcards(shuffled);
+    setCurrentCard(0);
+    setFlipped(false);
+    setCopied(false);
   };
 
-  // ==========================================
-  // Export TXT
-  // ==========================================
+  const copyCard = async () => {
+    if (!card) return;
+
+    try {
+      await navigator.clipboard.writeText(
+        `Question:\n${card.question}\n\nAnswer:\n${card.answer}`
+      );
+
+      setCopied(true);
+
+      window.setTimeout(() => {
+        setCopied(false);
+      }, 2200);
+    } catch (err) {
+      console.error("[FLASHCARD COPY ERROR]", err);
+    }
+  };
 
   const exportTXT = () => {
-
     if (!flashcards.length) return;
 
     const text = flashcards
       .map(
-        (card, index) =>
-          `${index + 1}.\nQ: ${card.question}\nA: ${card.answer}\n`
+        (item, index) =>
+          `FLASHCARD ${index + 1}\n\nQUESTION\n${item.question}\n\nANSWER\n${item.answer}\n`
       )
-      .join("\n");
+      .join("\n----------------------------------------\n\n");
 
     const blob = new Blob([text], {
       type: "text/plain;charset=utf-8",
     });
 
     const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
 
-    const a = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "StudySphere_Flashcards.txt";
 
-    a.href = url;
-    a.download = "StudySphere_Flashcards.txt";
-
-    a.click();
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
 
     URL.revokeObjectURL(url);
+  };
 
+  const handleKeyDown = (event) => {
+    if (!card) return;
+
+    if (event.key === "ArrowRight") {
+      nextCard();
+    }
+
+    if (event.key === "ArrowLeft") {
+      previousCard();
+    }
+
+    if (event.key === " " || event.key === "Enter") {
+      const tag = event.target?.tagName?.toLowerCase();
+
+      if (
+        tag !== "button" &&
+        tag !== "input" &&
+        tag !== "textarea"
+      ) {
+        event.preventDefault();
+        setFlipped((prev) => !prev);
+      }
+    }
   };
 
   return (
+    <div
+      tabIndex={-1}
+      onKeyDown={handleKeyDown}
+      className="h-full min-h-0 overflow-y-auto bg-[#050b15] text-white outline-none"
+    >
+      <div className="mx-auto w-full max-w-[1380px] px-4 py-4 sm:px-5 lg:px-6 xl:px-7">
+        {/* HEADER */}
+        <header className="relative overflow-hidden rounded-[24px] border border-[#1b2b41] bg-[#091321] shadow-[0_22px_70px_rgba(0,0,0,0.24)]">
+          <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-cyan-500/[0.08] blur-[110px]" />
+          <div className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-blue-600/[0.045] blur-[100px]" />
 
-    <div className="flex-1 overflow-y-auto bg-[#0B1120] px-6 py-8 text-white">
+          <div className="relative flex flex-col gap-5 p-5 sm:p-6 xl:flex-row xl:items-center xl:justify-between xl:p-7">
+            <div className="flex min-w-0 items-start gap-4">
+              <div className="relative flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/15 bg-gradient-to-br from-cyan-500/15 to-blue-500/[0.06] text-cyan-300 shadow-[0_12px_30px_rgba(6,182,212,0.08)]">
+                <Brain size={25} strokeWidth={1.8} />
 
-      <div className="mx-auto max-w-6xl space-y-8">
-
-        {/* Header */}
-
-        <div className="rounded-3xl border border-slate-700/50 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-8 shadow-2xl">
-
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-
-            <div className="flex items-start gap-4">
-
-              <div className="rounded-2xl bg-cyan-500/10 p-4">
-
-                <Brain className="h-8 w-8 text-cyan-400" />
-
+                <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-white ring-2 ring-[#091321]">
+                  <Sparkles size={8} />
+                </span>
               </div>
 
-              <div>
+              <div className="min-w-0">
+                <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+                    Active Recall
+                  </span>
 
-                <div className="flex items-center gap-2">
-
-                  <h1 className="text-3xl font-bold tracking-tight">
-
-                    AI Flashcards
-
-                  </h1>
-
-                  <Sparkles className="h-5 w-5 text-yellow-400" />
-
+                  <StatusBadge
+                    loading={loading}
+                    cards={flashcards.length}
+                    error={error}
+                  />
                 </div>
 
-                <p className="mt-2 max-w-2xl text-slate-400">
+                <h1 className="text-[27px] font-bold tracking-[-0.045em] text-white sm:text-[30px]">
+                  AI Flashcards
+                </h1>
 
-                  Instantly convert your uploaded PDFs into
-                  interactive AI-powered flashcards for
-                  revision and active recall.
-
+                <p className="mt-1.5 max-w-[650px] text-[13px] leading-6 text-slate-400">
+                  Turn your uploaded study material into focused
+                  question-and-answer cards designed for active
+                  recall and faster revision.
                 </p>
-
               </div>
-
             </div>
 
-            <div className="flex flex-wrap gap-3">
-
-              <button
+            <div className="flex flex-wrap items-center gap-2">
+              <PrimaryButton
+                loading={loading}
+                label={
+                  loading
+                    ? "Generating..."
+                    : flashcards.length
+                    ? "Generate Again"
+                    : "Generate Flashcards"
+                }
                 onClick={handleGenerateFlashcards}
-                disabled={loading}
-                className="flex items-center gap-2 rounded-xl bg-cyan-600 px-5 py-2.5 font-medium transition hover:bg-cyan-500 disabled:opacity-60"
-              >
+              />
 
-                {loading ? (
-                  <Loader2
-                    size={18}
-                    className="animate-spin"
-                  />
-                ) : (
-                  <Sparkles size={18} />
-                )}
-
-                {loading
-                  ? "Generating..."
-                  : "Generate Flashcards"}
-
-              </button>
-
-              <button
+              <ActionButton
+                icon={
+                  copied ? (
+                    <Check size={14} />
+                  ) : (
+                    <Copy size={14} />
+                  )
+                }
+                label={copied ? "Copied" : "Copy"}
                 onClick={copyCard}
-                disabled={!flashcards.length}
-                className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 transition hover:bg-slate-700 disabled:opacity-50"
-              >
+                disabled={!card}
+                success={copied}
+              />
 
-                <Copy size={18} />
-
-                Copy
-
-              </button>
-
-              <button
+              <ActionButton
+                icon={<Download size={14} />}
+                label="Export"
                 onClick={exportTXT}
                 disabled={!flashcards.length}
-                className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 transition hover:bg-slate-700 disabled:opacity-50"
-              >
-
-                <Download size={18} />
-
-                Export
-
-              </button>
+              />
 
               {flashcards.length > 0 && (
-
-                <button
+                <ActionButton
+                  icon={<RefreshCw size={14} />}
+                  label="Regenerate"
                   onClick={handleGenerateFlashcards}
-                  className="flex items-center gap-2 rounded-xl border border-cyan-500 px-4 py-2 text-cyan-300 transition hover:bg-cyan-500/10"
-                >
+                  disabled={loading}
+                  accent
+                />
+              )}
+            </div>
+          </div>
+        </header>
 
-                  <RefreshCw size={18} />
+        {/* METRICS */}
+        {flashcards.length > 0 && !loading && (
+          <div className="mt-3 grid grid-cols-2 overflow-hidden rounded-[18px] border border-[#1b2b41] bg-[#091321] sm:grid-cols-4">
+            <MetricCard
+              icon={<Layers3 size={15} />}
+              value={flashcards.length}
+              label="Cards"
+            />
 
-                  Regenerate
+            <MetricCard
+              icon={<Target size={15} />}
+              value={`${answeredPosition}/${flashcards.length}`}
+              label="Current"
+            />
 
-                </button>
+            <MetricCard
+              icon={<CheckCircle2 size={15} />}
+              value={`${Math.round(progress)}%`}
+              label="Progress"
+            />
 
+            <MetricCard
+              icon={<FileText size={15} />}
+              value={sources.length}
+              label="Sources"
+              last
+            />
+          </div>
+        )}
+
+        {/* MAIN WORKSPACE */}
+        <section className="mt-3 overflow-hidden rounded-[24px] border border-[#1b2b41] bg-[#091321] shadow-[0_22px_65px_rgba(0,0,0,0.18)]">
+          <div className="flex items-center justify-between gap-4 border-b border-[#1b2b41] px-4 py-3.5 sm:px-5">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-500/[0.08] text-cyan-300">
+                <Brain size={15} />
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-600">
+                  Interactive Revision
+                </p>
+
+                <p className="truncate text-xs font-semibold text-slate-300">
+                  {loading
+                    ? "Building your flashcard deck"
+                    : flashcards.length
+                    ? "Study one concept at a time"
+                    : "Your flashcard deck"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2">
+              {card && (
+                <span className="hidden rounded-full border border-cyan-400/10 bg-cyan-500/[0.05] px-2.5 py-1 text-[9px] font-semibold text-cyan-300 sm:inline-flex">
+                  Card {currentCard + 1} of {flashcards.length}
+                </span>
               )}
 
-            </div>
-
-          </div>
-
-        </div>
-
-                {/* Flashcards */}
-
-        <div className="rounded-3xl border border-slate-700/50 bg-slate-900/80 p-8 shadow-xl backdrop-blur-md">
-
-          <div className="mb-6 flex items-center justify-between">
-
-            <h2 className="text-xl font-semibold">
-              Generated Flashcards
-            </h2>
-
-            <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-300">
-
-              {loading
-                ? "Generating..."
-                : flashcards.length
-                ? `${currentCard + 1} / ${flashcards.length}`
-                : "Ready"}
-
-            </span>
-
-          </div>
-
-          {/* Loading */}
-
-          {loading && (
-
-            <div className="animate-pulse space-y-4">
-
-              <div className="h-72 rounded-3xl bg-slate-800"></div>
-
-              <div className="h-4 w-1/2 rounded bg-slate-700"></div>
-
-              <div className="h-4 w-2/3 rounded bg-slate-700"></div>
-
-            </div>
-
-          )}
-
-          {/* Error */}
-
-          {!loading && error && (
-
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
-
-              <h3 className="text-xl font-semibold text-red-400">
-                Unable to Generate Flashcards
-              </h3>
-
-              <p className="mt-3 text-slate-300">
-
-                {error}
-
-              </p>
-
-            </div>
-
-          )}
-
-          {/* Empty */}
-
-          {!loading &&
-            !flashcards.length &&
-            !error && (
-
-            <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-950/50 px-8 py-16 text-center">
-
-              <Brain className="mx-auto mb-5 h-16 w-16 text-slate-500" />
-
-              <h3 className="text-2xl font-semibold">
-                No Flashcards Available
-              </h3>
-
-              <p className="mx-auto mt-4 max-w-2xl leading-7 text-slate-400">
-
-                Upload one or more PDFs and click
-
-                <span className="font-semibold text-cyan-400">
-
-                  {" "}Generate Flashcards
-
+              {card && (
+                <span className="hidden items-center gap-1.5 rounded-full border border-emerald-400/10 bg-emerald-500/[0.04] px-2.5 py-1 text-[9px] font-semibold text-emerald-300 md:inline-flex">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  Study Mode
                 </span>
-
-                .
-
-                StudySphere AI will automatically create
-                interactive question-and-answer flashcards
-                for quick revision.
-
-              </p>
-
+              )}
             </div>
+          </div>
 
-          )}
+          <div className="p-4 sm:p-6 lg:p-7">
+            {loading && <FlashcardsSkeleton />}
 
-          {/* Flashcard */}
+            {!loading && error && (
+              <StateCard
+                error
+                title="Unable to generate flashcards"
+                description={error}
+                actionLabel="Try Again"
+                onAction={handleGenerateFlashcards}
+                actionIcon={<RefreshCw size={14} />}
+              />
+            )}
 
-          {!loading &&
-            flashcards.length > 0 && (
+            {!loading &&
+              !error &&
+              !flashcards.length && (
+                <StateCard
+                  icon={<Brain size={26} />}
+                  title="Your flashcard deck is ready to build"
+                  description="Generate a deck from your uploaded study material. Each card will focus on an important concept, definition, fact, process or exam-relevant point."
+                  actionLabel="Generate Flashcards"
+                  onAction={handleGenerateFlashcards}
+                  actionIcon={<Sparkles size={14} />}
+                />
+              )}
 
-            <div className="space-y-8">
-
-              <div
-                onClick={() => setFlipped(!flipped)}
-                className="cursor-pointer select-none"
-              >
-
-                <div
-                  className={`min-h-[340px] rounded-3xl border transition-all duration-500 ${
+            {!loading && card && (
+              <div className="space-y-5">
+                {/* CARD */}
+                <button
+                  type="button"
+                  aria-label={
                     flipped
-                      ? "border-cyan-500 bg-cyan-500/10"
-                      : "border-slate-700 bg-slate-950/60"
-                  }`}
+                      ? "Show question"
+                      : "Show answer"
+                  }
+                  onClick={() =>
+                    setFlipped((prev) => !prev)
+                  }
+                  className="flashcard-shell group relative block min-h-[390px] w-full overflow-hidden rounded-[24px] border border-[#20334d] bg-[#0b1728] text-left shadow-[0_24px_70px_rgba(0,0,0,0.25)] transition duration-300 hover:border-cyan-400/20 focus:border-cyan-400/30 focus:outline-none focus:ring-2 focus:ring-cyan-400/10 sm:min-h-[430px]"
                 >
+                  <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-cyan-500/[0.065] blur-[95px]" />
+                  <div className="pointer-events-none absolute -bottom-28 -left-20 h-60 w-60 rounded-full bg-blue-600/[0.045] blur-[90px]" />
 
-                  <div className="flex h-full min-h-[340px] flex-col items-center justify-center px-10 py-12 text-center">
+                  <div className="relative flex min-h-[390px] flex-col sm:min-h-[430px]">
+                    <div className="flex items-center justify-between border-b border-white/[0.055] px-5 py-4 sm:px-7">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                            flipped
+                              ? "bg-emerald-500/10 text-emerald-300"
+                              : "bg-cyan-500/10 text-cyan-300"
+                          }`}
+                        >
+                          {flipped ? (
+                            <CheckCircle2 size={15} />
+                          ) : (
+                            <Brain size={15} />
+                          )}
+                        </span>
 
-                    <div className="mb-6 rounded-full bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-600">
+                            {flipped ? "Answer" : "Question"}
+                          </p>
 
-                      {flipped
-                        ? "Answer"
-                        : "Question"}
+                          <p className="mt-0.5 text-[10px] text-slate-500">
+                            {flipped
+                              ? "Reveal the explanation"
+                              : "Test your memory first"}
+                          </p>
+                        </div>
+                      </div>
 
+                      <span className="rounded-full border border-white/[0.06] bg-white/[0.025] px-2.5 py-1 text-[9px] font-semibold text-slate-600">
+                        {String(currentCard + 1).padStart(
+                          2,
+                          "0"
+                        )}
+                      </span>
                     </div>
 
-                    <h3 className="text-2xl font-bold leading-relaxed">
-
-                      {flipped
-                        ? flashcards[currentCard].answer
-                        : flashcards[currentCard].question}
-
-                    </h3>
-
-                    <p className="mt-10 text-sm text-slate-400">
-
-                      Click anywhere on the card to
-
-                      <span className="font-semibold text-cyan-400">
-
-                        {" "}
-                        flip
-
+                    <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center sm:px-12 sm:py-12">
+                      <span
+                        className={`rounded-full border px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.16em] ${
+                          flipped
+                            ? "border-emerald-400/15 bg-emerald-500/[0.06] text-emerald-300"
+                            : "border-cyan-400/15 bg-cyan-500/[0.06] text-cyan-300"
+                        }`}
+                      >
+                        {flipped
+                          ? "Answer"
+                          : "Question"}
                       </span>
 
-                    </p>
+                      <div className="mx-auto mt-7 max-w-4xl">
+                        <p
+                          className={`whitespace-pre-wrap text-[19px] font-semibold leading-[1.7] tracking-[-0.015em] sm:text-[24px] ${
+                            flipped
+                              ? "text-slate-100"
+                              : "text-white"
+                          }`}
+                        >
+                          {flipped
+                            ? card.answer
+                            : card.question}
+                        </p>
+                      </div>
 
+                      <div className="mt-9 inline-flex items-center gap-2 rounded-full border border-white/[0.045] bg-white/[0.018] px-3 py-1.5 text-[9px] font-medium text-slate-600">
+                        <RotateCcw size={11} />
+                        Click card to flip
+                      </div>
+                    </div>
+
+                    <div className="border-t border-white/[0.045] px-5 py-3.5 sm:px-7">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-[9px] text-slate-700">
+                          Active recall
+                        </span>
+
+                        <span className="text-[9px] font-medium text-slate-600">
+                          Space / Enter to flip
+                        </span>
+                      </div>
+                    </div>
                   </div>
-
-                </div>
-
-              </div>
-
-                            {/* Controls */}
-
-              <div className="flex flex-wrap items-center justify-center gap-4">
-
-                <button
-                  onClick={previousCard}
-                  disabled={currentCard === 0}
-                  className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-5 py-2 transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <ChevronLeft size={18} />
-                  Previous
                 </button>
 
-                <button
-                  onClick={shuffleCards}
-                  className="flex items-center gap-2 rounded-xl bg-cyan-600 px-5 py-2 font-medium transition hover:bg-cyan-500"
-                >
-                  <Shuffle size={18} />
-                  Shuffle
-                </button>
-
-                <button
-                  onClick={nextCard}
-                  disabled={currentCard === flashcards.length - 1}
-                  className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-5 py-2 transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Next
-                  <ChevronRight size={18} />
-                </button>
-
-              </div>
-
-              {/* Progress */}
-
-              <div>
-
-                <div className="mb-2 flex justify-between text-sm text-slate-400">
-
-                  <span>
-                    Progress
-                  </span>
-
-                  <span>
-                    {currentCard + 1} / {flashcards.length}
-                  </span>
-
-                </div>
-
-                <div className="h-2 overflow-hidden rounded-full bg-slate-800">
-
-                  <div
-                    className="h-full rounded-full bg-cyan-500 transition-all duration-300"
-                    style={{
-                      width: `${((currentCard + 1) / flashcards.length) * 100}%`,
-                    }}
+                {/* CONTROLS */}
+                <div className="flex flex-wrap items-center justify-center gap-2.5">
+                  <ControlButton
+                    icon={<ChevronLeft size={15} />}
+                    label="Previous"
+                    onClick={previousCard}
+                    disabled={currentCard === 0}
                   />
 
+                  <ControlButton
+                    icon={<Shuffle size={14} />}
+                    label="Shuffle"
+                    onClick={shuffleCards}
+                    accent
+                  />
+
+                  <ControlButton
+                    icon={
+                      flipped ? (
+                        <Brain size={14} />
+                      ) : (
+                        <Check size={14} />
+                      )
+                    }
+                    label={
+                      flipped
+                        ? "Show Question"
+                        : "Show Answer"
+                    }
+                    onClick={() =>
+                      setFlipped((prev) => !prev)
+                    }
+                  />
+
+                  <ControlButton
+                    icon={<ChevronRight size={15} />}
+                    label="Next"
+                    onClick={nextCard}
+                    disabled={
+                      currentCard ===
+                      flashcards.length - 1
+                    }
+                  />
                 </div>
 
-              </div>
+                {/* PROGRESS */}
+                <div className="rounded-[18px] border border-white/[0.055] bg-white/[0.012] px-4 py-3.5 sm:px-5">
+                  <div className="mb-2.5 flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-600">
+                        Deck Progress
+                      </p>
 
-              {/* Source PDFs */}
+                      <p className="mt-0.5 text-[10px] text-slate-700">
+                        Card {currentCard + 1} of{" "}
+                        {flashcards.length}
+                      </p>
+                    </div>
 
-              {sources.length > 0 && (
-
-                <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6">
-
-                  <h3 className="mb-4 text-lg font-semibold">
-                    Source PDFs
-                  </h3>
-
-                  <div className="flex flex-wrap gap-3">
-
-                    {sources.map((file, index) => (
-
-                      <span
-                        key={index}
-                        className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-300"
-                      >
-                        📄 {file}
-                      </span>
-
-                    ))}
-
+                    <span className="text-[10px] font-semibold text-cyan-300">
+                      {Math.round(progress)}%
+                    </span>
                   </div>
 
+                  <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.05]">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300"
+                      style={{
+                        width: `${progress}%`,
+                      }}
+                    />
+                  </div>
+
+                  <div className="mt-3 flex gap-1">
+                    {flashcards
+                      .slice(0, Math.min(flashcards.length, 30))
+                      .map((_, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          aria-label={`Go to card ${
+                            index + 1
+                          }`}
+                          onClick={() => {
+                            setCurrentCard(index);
+                            setFlipped(false);
+                            setCopied(false);
+                          }}
+                          className={`h-1.5 flex-1 rounded-full transition ${
+                            index === currentCard
+                              ? "bg-cyan-400"
+                              : index < currentCard
+                              ? "bg-cyan-500/35"
+                              : "bg-white/[0.05]"
+                          }`}
+                        />
+                      ))}
+                  </div>
                 </div>
 
-              )}
+                {/* CARD INSIGHT */}
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-[18px] border border-cyan-400/10 bg-cyan-500/[0.025] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300">
+                        <Lightbulb size={16} />
+                      </div>
 
-            </div>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-200">
+                          Active Recall Tip
+                        </p>
 
-          )}
+                        <p className="mt-1.5 text-[11px] leading-5 text-slate-600">
+                          Try answering the question completely
+                          before revealing the answer. This makes
+                          the card more useful for memory practice.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
+                  <div className="rounded-[18px] border border-white/[0.055] bg-white/[0.012] p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-300">
+                        <Target size={16} />
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-200">
+                          Current Card
+                        </p>
+
+                        <p className="mt-1.5 line-clamp-2 text-[11px] leading-5 text-slate-600">
+                          {card.question}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SOURCES */}
+                {sources.length > 0 && (
+                  <SourcePanel sources={sources} />
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* BENEFITS */}
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <BenefitCard
+            icon={<RotateCcw size={17} />}
+            title="Active Recall"
+            description="Recall the answer before revealing it instead of passively rereading."
+            tone="cyan"
+          />
+
+          <BenefitCard
+            icon={<Layers3 size={17} />}
+            title="Concept Focused"
+            description="Each card isolates one useful idea so revision stays focused."
+            tone="blue"
+          />
+
+          <BenefitCard
+            icon={<GraduationCap size={17} />}
+            title="Exam Revision"
+            description="Use the deck for quick revision of definitions, concepts and important facts."
+            tone="emerald"
+          />
         </div>
 
-        {/* Benefits */}
+        <div className="h-6" />
+      </div>
+    </div>
+  );
+}
 
-        <div className="grid gap-5 md:grid-cols-3">
+function PrimaryButton({
+  loading,
+  label,
+  onClick,
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={loading}
+      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 px-4 text-xs font-semibold text-white shadow-[0_10px_30px_rgba(8,145,178,0.20)] transition-all hover:-translate-y-px hover:shadow-[0_14px_34px_rgba(8,145,178,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      {loading ? (
+        <Loader2
+          size={15}
+          className="animate-spin"
+        />
+      ) : (
+        <Sparkles size={15} />
+      )}
 
-          <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500">
+      {label}
+    </button>
+  );
+}
 
-            <RotateCcw className="mb-4 h-8 w-8 text-cyan-400" />
+function ActionButton({
+  icon,
+  label,
+  onClick,
+  disabled,
+  accent = false,
+  success = false,
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        inline-flex h-10 items-center justify-center gap-1.5
+        rounded-xl border px-3.5 text-xs font-medium transition-all
+        disabled:cursor-not-allowed disabled:opacity-30
+        ${
+          success
+            ? "border-emerald-400/20 bg-emerald-500/[0.07] text-emerald-300"
+            : accent
+            ? "border-cyan-400/20 bg-cyan-500/[0.06] text-cyan-300 hover:bg-cyan-500/[0.10]"
+            : "border-[#263650] bg-[#0b1728] text-slate-400 hover:border-cyan-400/20 hover:bg-[#0e1a2e] hover:text-white"
+        }
+      `}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
 
-            <h3 className="mb-2 text-lg font-semibold">
-              Active Recall
-            </h3>
+function ControlButton({
+  icon,
+  label,
+  onClick,
+  disabled = false,
+  accent = false,
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        inline-flex h-10 items-center justify-center gap-2
+        rounded-xl border px-4 text-xs font-medium transition-all
+        disabled:cursor-not-allowed disabled:opacity-25
+        ${
+          accent
+            ? "border-cyan-400/15 bg-cyan-500/[0.07] text-cyan-300 hover:border-cyan-400/25 hover:bg-cyan-500/[0.11]"
+            : "border-[#263650] bg-[#0b1728] text-slate-500 hover:border-[#334967] hover:bg-[#0e1a2e] hover:text-slate-200"
+        }
+      `}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
 
-            <p className="text-sm leading-6 text-slate-400">
-              Improve long-term memory by answering questions
-              instead of simply rereading your notes.
-            </p>
-
-          </div>
-
-          <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500">
-
-            <Layers3 className="mb-4 h-8 w-8 text-blue-400" />
-
-            <h3 className="mb-2 text-lg font-semibold">
-              Smart Organization
-            </h3>
-
-            <p className="text-sm leading-6 text-slate-400">
-              AI converts important concepts into structured
-              question-and-answer flashcards automatically.
-            </p>
-
-          </div>
-
-          <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500">
-
-            <GraduationCap className="mb-4 h-8 w-8 text-emerald-400" />
-
-            <h3 className="mb-2 text-lg font-semibold">
-              Exam Revision
-            </h3>
-
-            <p className="text-sm leading-6 text-slate-400">
-              Perfect for quick revision before quizzes,
-              interviews, assignments and semester exams.
-            </p>
-
-          </div>
-
-        </div>
-
+function MetricCard({
+  icon,
+  value,
+  label,
+  last = false,
+}) {
+  return (
+    <div
+      className={`
+        flex items-center gap-3 px-4 py-3.5 sm:px-5
+        ${
+          !last
+            ? "border-b border-[#1b2b41] sm:border-b-0 sm:border-r"
+            : ""
+        }
+      `}
+    >
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-500/[0.08] text-cyan-300">
+        {icon}
       </div>
 
+      <div className="min-w-0">
+        <p className="text-[15px] font-semibold tracking-[-0.015em] text-white">
+          {value}
+        </p>
+
+        <p className="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-slate-600">
+          {label}
+        </p>
+      </div>
     </div>
-
   );
+}
 
+function StatusBadge({
+  loading,
+  cards,
+  error,
+}) {
+  if (loading) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/15 bg-cyan-500/[0.06] px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.08em] text-cyan-300">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+        Generating
+      </span>
+    );
+  }
+
+  if (error) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-red-400/15 bg-red-500/[0.05] px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.08em] text-red-300">
+        <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+        Error
+      </span>
+    );
+  }
+
+  if (cards > 0) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/15 bg-emerald-500/[0.05] px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.08em] text-emerald-300">
+        <CheckCircle2 size={11} />
+        Ready
+      </span>
+    );
+  }
+
+  return null;
+}
+
+function SourcePanel({ sources }) {
+  return (
+    <section className="rounded-[18px] border border-white/[0.055] bg-white/[0.012] p-4 sm:p-5">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/[0.08] text-cyan-300">
+            <FileText size={16} />
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-white">
+              Source Material
+            </p>
+
+            <p className="mt-0.5 text-[10px] text-slate-600">
+              Documents used to create this flashcard deck.
+            </p>
+          </div>
+        </div>
+
+        <span className="shrink-0 rounded-full border border-white/[0.06] bg-white/[0.025] px-2.5 py-1 text-[9px] font-medium text-slate-500">
+          {sources.length}{" "}
+          {sources.length === 1 ? "file" : "files"}
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        {sources.map((file, index) => (
+          <div
+            key={`${file}-${index}`}
+            className="flex min-w-0 items-center gap-3 rounded-xl border border-white/[0.055] bg-[#07111e] px-3.5 py-3 transition hover:border-cyan-400/15"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-500/[0.07] text-cyan-300">
+              <FileText size={15} />
+            </div>
+
+            <div className="min-w-0">
+              <p className="truncate text-xs font-medium text-slate-300">
+                {file}
+              </p>
+
+              <p className="mt-0.5 text-[9px] uppercase tracking-[0.08em] text-slate-700">
+                PDF Source
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function StateCard({
+  icon,
+  title,
+  description,
+  error = false,
+  actionLabel,
+  onAction,
+  actionIcon,
+}) {
+  return (
+    <div
+      className={`
+        rounded-[20px] border px-6 py-16 text-center sm:py-20
+        ${
+          error
+            ? "border-red-400/15 bg-red-500/[0.025]"
+            : "border-dashed border-white/[0.08] bg-white/[0.012]"
+        }
+      `}
+    >
+      <div
+        className={`
+          mx-auto flex h-14 w-14 items-center justify-center rounded-2xl
+          ${
+            error
+              ? "bg-red-500/10 text-red-400"
+              : "bg-cyan-500/10 text-cyan-300"
+          }
+        `}
+      >
+        {error ? (
+          <X size={24} />
+        ) : (
+          icon || <Brain size={24} />
+        )}
+      </div>
+
+      <h2 className="mt-5 text-lg font-semibold tracking-[-0.02em] text-white">
+        {title}
+      </h2>
+
+      <p className="mx-auto mt-2 max-w-[560px] text-[12px] leading-6 text-slate-600">
+        {description}
+      </p>
+
+      {actionLabel && onAction && (
+        <button
+          type="button"
+          onClick={onAction}
+          className={`
+            mt-6 inline-flex items-center gap-2 rounded-xl
+            px-4 py-2.5 text-xs font-semibold transition
+            ${
+              error
+                ? "border border-red-400/15 bg-red-500/[0.06] text-red-300 hover:bg-red-500/[0.10]"
+                : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-[0_10px_30px_rgba(8,145,178,0.18)] hover:-translate-y-px"
+            }
+          `}
+        >
+          {actionIcon}
+          {actionLabel}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function FlashcardsSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="min-h-[390px] rounded-[24px] border border-white/[0.045] bg-white/[0.025] sm:min-h-[430px]" />
+
+      <div className="mt-5 flex justify-center gap-2.5">
+        <div className="h-10 w-24 rounded-xl bg-white/[0.04]" />
+        <div className="h-10 w-24 rounded-xl bg-white/[0.04]" />
+        <div className="h-10 w-24 rounded-xl bg-white/[0.04]" />
+      </div>
+
+      <div className="mt-5 h-20 rounded-[18px] bg-white/[0.025]" />
+    </div>
+  );
+}
+
+function BenefitCard({
+  icon,
+  title,
+  description,
+  tone,
+}) {
+  const tones = {
+    cyan: "bg-cyan-500/10 text-cyan-300",
+    blue: "bg-blue-500/10 text-blue-300",
+    emerald: "bg-emerald-500/10 text-emerald-300",
+  };
+
+  return (
+    <div className="rounded-[18px] border border-[#1b2b41] bg-[#091321] p-4 transition duration-200 hover:border-[#2a3e59] hover:bg-[#0b1627]">
+      <div
+        className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl ${tones[tone]}`}
+      >
+        {icon}
+      </div>
+
+      <h3 className="text-sm font-semibold text-white">
+        {title}
+      </h3>
+
+      <p className="mt-1.5 text-[11px] leading-5 text-slate-600">
+        {description}
+      </p>
+    </div>
+  );
 }
 
 export default FlashcardsView;

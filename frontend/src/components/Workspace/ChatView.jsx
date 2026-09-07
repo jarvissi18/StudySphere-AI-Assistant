@@ -4,20 +4,22 @@ function ChatView({
   uploadedFiles,
   fetchFiles,
 }) {
-
   return (
-
-    <div className="min-h-full bg-[#0B1120]">
-
+    <div
+      className="
+        h-full
+        min-h-0
+        w-full
+        overflow-hidden
+        bg-[#070d1a]
+      "
+    >
       <ChatWindow
         uploadedFiles={uploadedFiles}
         fetchFiles={fetchFiles}
       />
-
     </div>
-
   );
-
 }
 
 export default ChatView;

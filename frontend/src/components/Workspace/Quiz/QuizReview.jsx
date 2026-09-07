@@ -1,3 +1,11 @@
+import {
+  CheckCircle2,
+  XCircle,
+  BookOpen,
+  RotateCcw,
+  ArrowLeft,
+} from "lucide-react";
+
 function QuizReview({
   quiz,
   selectedAnswers,
@@ -5,216 +13,360 @@ function QuizReview({
   resetQuiz,
 }) {
   return (
-    <div className="space-y-6">
-      {/* =====================================
+    <div className="space-y-4">
+
+      {/* ======================================================
           HEADER
-      ===================================== */}
+      ====================================================== */}
 
-      <div className="rounded-3xl border border-slate-700 bg-[#172033] p-6 shadow-xl">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">
-              Answer Review
-            </h1>
+      <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-gradient-to-br from-[#11182c] via-[#0b1426] to-[#09101e] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.20)]">
 
-            <p className="mt-1 text-sm text-slate-400">
-              Review each question with the correct answer and explanation.
+        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-violet-500/[0.08] blur-[80px]" />
+
+        <div className="relative flex items-center justify-between gap-4">
+
+          <div className="flex items-start gap-3.5">
+
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-violet-400/15 bg-violet-500/10 text-violet-300">
+
+              <BookOpen size={20} />
+
+            </div>
+
+            <div>
+
+              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-violet-400">
+                Quiz Review
+              </p>
+
+              <h1 className="mt-1 text-[23px] font-bold tracking-[-0.03em] text-white">
+                Review your answers
+              </h1>
+
+              <p className="mt-1.5 max-w-xl text-[10px] leading-5 text-slate-600">
+                Review each question, compare your answer with
+                the correct answer, and understand the explanation.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div className="hidden rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2 text-center sm:block">
+
+            <p className="text-[8px] uppercase tracking-[0.14em] text-slate-700">
+              Questions
             </p>
+
+            <p className="mt-0.5 text-sm font-semibold text-white">
+              {quiz.length}
+            </p>
+
           </div>
 
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-2xl shadow-lg">
-            📖
-          </div>
         </div>
+
       </div>
 
-      {/* =====================================
+      {/* ======================================================
           QUESTIONS
-      ===================================== */}
+      ====================================================== */}
 
       {quiz.map((q, index) => {
-        const selected = selectedAnswers[index];
+        const selected =
+          selectedAnswers[index];
+
+        const correct =
+          selected === q.answer;
 
         return (
           <div
             key={index}
-            className="overflow-hidden rounded-3xl border border-slate-700 bg-[#172033] shadow-lg"
+            className="overflow-hidden rounded-3xl border border-white/[0.07] bg-[#0b1426]/90 shadow-[0_14px_45px_rgba(0,0,0,0.16)]"
           >
-            {/* Question Header */}
 
-            <div className="flex items-center justify-between border-b border-slate-700 px-6 py-4">
-              <h2 className="text-lg font-semibold text-white">
-                Question {index + 1}
-              </h2>
+            {/* Header */}
 
-              {selected === q.answer ? (
-                <span className="rounded-full bg-green-600 px-3 py-1 text-xs font-semibold text-white">
-                  ✓ Correct
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3.5">
+
+              <div className="flex items-center gap-2.5">
+
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.035] text-[9px] font-semibold text-slate-500">
+                  {String(index + 1).padStart(
+                    2,
+                    "0"
+                  )}
                 </span>
-              ) : (
-                <span className="rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white">
-                  ✗ Wrong
-                </span>
-              )}
+
+                <div>
+
+                  <p className="text-[10px] font-semibold text-slate-300">
+                    Question {index + 1}
+                  </p>
+
+                  <p className="mt-0.5 text-[8px] text-slate-700">
+                    Answer review
+                  </p>
+
+                </div>
+
+              </div>
+
+              <span
+                className={`
+                  flex
+                  items-center
+                  gap-1.5
+                  rounded-full
+                  px-2.5
+                  py-1
+                  text-[8px]
+                  font-semibold
+                  ${
+                    correct
+                      ? "border border-emerald-400/15 bg-emerald-500/[0.07] text-emerald-300"
+                      : "border border-rose-400/15 bg-rose-500/[0.07] text-rose-300"
+                  }
+                `}
+              >
+
+                {correct ? (
+                  <CheckCircle2 size={11} />
+                ) : (
+                  <XCircle size={11} />
+                )}
+
+                {correct
+                  ? "Correct"
+                  : "Incorrect"}
+
+              </span>
+
             </div>
 
-            {/* Body */}
+            {/* ==================================================
+                BODY
+            ================================================== */}
 
-            <div className="p-6">
-              {/* Question */}
+            <div className="p-5 lg:p-6">
 
-              <h3 className="text-xl font-semibold leading-8 text-white">
+              <h2 className="max-w-4xl text-[16px] font-semibold leading-7 text-white">
                 {q.question}
-              </h3>
+              </h2>
 
               {/* Options */}
 
-              <div className="mt-6 space-y-3">
-                {q.options.map((option, i) => {
-                  let classes =
-                    "border-slate-700 bg-slate-800";
+              <div className="mt-5 space-y-2.5">
 
-                  if (option === q.answer) {
-                    classes =
-                      "border-green-500 bg-green-500/15";
-                  }
+                {q.options.map(
+                  (option, optionIndex) => {
 
-                  if (
-                    option === selected &&
-                    option !== q.answer
-                  ) {
-                    classes =
-                      "border-red-500 bg-red-500/15";
-                  }
+                    const isCorrect =
+                      option ===
+                      q.answer;
 
-                  return (
-                    <div
-                      key={i}
-                      className={`rounded-2xl border p-4 transition-all ${classes}`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className="
-                            flex
-                            h-10
-                            w-10
-                            items-center
-                            justify-center
-                            rounded-full
-                            bg-slate-700
-                            text-sm
-                            font-bold
-                            text-white
-                          "
-                        >
-                          {String.fromCharCode(65 + i)}
-                        </div>
+                    const isSelected =
+                      option ===
+                      selected;
 
-                        <div className="flex-1">
-                          <p className="text-base text-white">
+                    let style =
+                      "border-white/[0.06] bg-white/[0.018]";
+
+                    if (isCorrect) {
+                      style =
+                        "border-emerald-400/20 bg-emerald-500/[0.06]";
+                    }
+
+                    if (
+                      isSelected &&
+                      !isCorrect
+                    ) {
+                      style =
+                        "border-rose-400/20 bg-rose-500/[0.06]";
+                    }
+
+                    return (
+                      <div
+                        key={optionIndex}
+                        className={`rounded-2xl border p-3.5 ${style}`}
+                      >
+
+                        <div className="flex items-center gap-3">
+
+                          <span
+                            className={`
+                              flex
+                              h-8
+                              w-8
+                              shrink-0
+                              items-center
+                              justify-center
+                              rounded-lg
+                              text-[10px]
+                              font-semibold
+                              ${
+                                isCorrect
+                                  ? "bg-emerald-500/10 text-emerald-300"
+                                  : isSelected &&
+                                    !isCorrect
+                                  ? "bg-rose-500/10 text-rose-300"
+                                  : "bg-white/[0.035] text-slate-500"
+                              }
+                            `}
+                          >
+                            {String.fromCharCode(
+                              65 + optionIndex
+                            )}
+                          </span>
+
+                          <p className="flex-1 text-[11px] leading-5 text-slate-300">
                             {option}
                           </p>
-                        </div>
 
-                        {option === q.answer && (
-                          <span className="rounded-full bg-green-600 px-2.5 py-1 text-xs font-semibold text-white">
-                            Correct
-                          </span>
-                        )}
-
-                        {option === selected &&
-                          option !== q.answer && (
-                            <span className="rounded-full bg-red-600 px-2.5 py-1 text-xs font-semibold text-white">
-                              Your Answer
+                          {isCorrect && (
+                            <span className="hidden rounded-lg bg-emerald-500/10 px-2 py-1 text-[8px] font-semibold text-emerald-300 sm:block">
+                              Correct answer
                             </span>
                           )}
+
+                          {isSelected &&
+                            !isCorrect && (
+                              <span className="hidden rounded-lg bg-rose-500/10 px-2 py-1 text-[8px] font-semibold text-rose-300 sm:block">
+                                Your answer
+                              </span>
+                            )}
+
+                        </div>
+
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
+
               </div>
 
-              {/* Explanation */}
+              {/* ==================================================
+                  EXPLANATION
+              ================================================== */}
 
               {q.explanation && (
-                <div className="mt-6 rounded-2xl border border-blue-500/30 bg-blue-500/10 p-5">
-                  <h3 className="text-base font-semibold text-blue-400">
-                    📘 Explanation
-                  </h3>
+                <div className="mt-5 rounded-2xl border border-blue-400/10 bg-blue-500/[0.035] p-4">
 
-                  <p className="mt-2 text-sm leading-7 text-slate-300">
+                  <div className="flex items-center gap-2">
+
+                    <BookOpen
+                      size={13}
+                      className="text-blue-400"
+                    />
+
+                    <p className="text-[10px] font-semibold text-blue-300">
+                      Explanation
+                    </p>
+
+                  </div>
+
+                  <p className="mt-2 text-[10px] leading-5 text-slate-500">
                     {q.explanation}
                   </p>
+
                 </div>
               )}
 
-              {/* Source */}
+              {/* ==================================================
+                  SOURCE
+              ================================================== */}
 
               {q.source && (
-                <div className="mt-4 flex items-center gap-2 text-sm text-slate-400">
+                <div className="mt-4 flex items-center gap-2 text-[9px] text-slate-700">
+
                   <span>📄</span>
 
-                  <span className="font-medium">
+                  <span>
                     Source:
                   </span>
 
-                  <span className="text-white">
+                  <span className="text-slate-500">
                     {q.source}
                   </span>
+
                 </div>
               )}
+
             </div>
+
           </div>
         );
       })}
 
-      {/* =====================================
-          BUTTONS
-      ===================================== */}
+      {/* ======================================================
+          ACTIONS
+      ====================================================== */}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-2.5 sm:grid-cols-2">
+
         <button
-          onClick={() => setReviewMode(false)}
+          type="button"
+          onClick={() =>
+            setReviewMode(false)
+          }
           className="
-            rounded-2xl
+            flex
+            h-[45px]
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
+            border
+            border-violet-400/20
             bg-gradient-to-r
             from-violet-600
             to-indigo-600
-            py-3.5
-            text-base
+            text-[11px]
             font-semibold
             text-white
-            shadow-lg
-            transition-all
-            duration-300
-            hover:-translate-y-0.5
-            hover:shadow-violet-900/40
+            shadow-[0_10px_28px_rgba(124,58,237,0.18)]
+            transition
+            hover:-translate-y-[1px]
           "
         >
-          ← Back to Result
+
+          <ArrowLeft size={15} />
+
+          Back to Result
+
         </button>
 
         <button
+          type="button"
           onClick={resetQuiz}
           className="
-            rounded-2xl
+            flex
+            h-[45px]
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
             border
-            border-slate-700
-            bg-slate-800
-            py-3.5
-            text-base
+            border-white/[0.07]
+            bg-white/[0.025]
+            text-[11px]
             font-semibold
-            text-white
-            shadow-lg
-            transition-all
-            duration-300
-            hover:-translate-y-0.5
-            hover:bg-slate-700
+            text-slate-300
+            transition
+            hover:border-white/[0.12]
+            hover:bg-white/[0.05]
+            hover:text-white
           "
         >
-          🔄 Generate New Quiz
+
+          <RotateCcw size={15} />
+
+          Generate New Quiz
+
         </button>
+
       </div>
+
     </div>
   );
 }

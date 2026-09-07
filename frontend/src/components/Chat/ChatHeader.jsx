@@ -1,119 +1,130 @@
 import {
   BrainCircuit,
   FileText,
-  Sparkles,
-  Circle,
+  Plus,
 } from "lucide-react";
 
-function ChatHeader({
-  pdfCount,
-}) {
+function ChatHeader({ pdfCount }) {
+  const hasDocuments = pdfCount > 0;
 
+  const openUpload = () => {
+    const trigger = document.querySelector(
+      "[data-study-upload-trigger]"
+    );
 
-  const aiReady = pdfCount > 0;
+    trigger?.click();
+  };
 
   return (
+    <header
+      className="
+        flex
+        min-h-[78px]
+        items-center
+        justify-between
+        gap-4
+        border-b
+        border-white/[0.06]
+        bg-[#070d1a]
+        px-5
+        py-3.5
+        sm:px-7
+        lg:px-10
+      "
+    >
 
-    <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur-xl">
+      
+      {/* ======================================================
+          RIGHT
+      ====================================================== */}
 
-      <div className="mx-auto flex h-16 items-center justify-between px-6">
+      <div className="flex shrink-0 items-center gap-2">
 
-        {/* ================= LEFT ================= */}
+        {/* Documents */}
 
-        <div className="flex items-center gap-4">
+        <div
+          className="
+            hidden
+            h-12
+            items-center
+            gap-2.5
+            rounded-xl
+            border
+            border-white/[0.06]
+            bg-white/[0.02]
+            px-3
+            sm:flex
+          "
+        >
 
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 shadow-lg">
-
-            <BrainCircuit className="h-6 w-6 text-white"/>
-
+          <div
+            className="
+              flex
+              h-8
+              w-8
+              items-center
+              justify-center
+              rounded-lg
+              bg-blue-500/[0.08]
+              text-blue-400
+            "
+          >
+            <FileText size={15} />
           </div>
 
           <div>
 
-            <div className="flex items-center gap-2">
+            <p className="text-[7px] uppercase tracking-[0.16em] text-slate-700">
+              Documents
+            </p>
 
-              <h2 className="text-lg font-semibold text-white">
-                AI Assistant
-              </h2>
-
-              <Sparkles
-                size={15}
-                className="text-yellow-400"
-              />
-
-            </div>
-
-            <div className="mt-1 flex items-center gap-2">
-
-              <Circle
-                size={8}
-                fill={aiReady ? "#22c55e" : "#ef4444"}
-                className={
-                  aiReady
-                    ? "text-green-500"
-                    : "text-red-500"
-                }
-              />
-
-              <p className="text-xs text-slate-400">
-
-                {aiReady
-                  ? "AI Ready • Ask anything from your PDFs"
-                  : "Upload a PDF to start chatting"}
-
-              </p>
-
-            </div>
+            <p className="mt-0.5 text-[10px] font-semibold text-slate-300">
+              {pdfCount} PDFs
+            </p>
 
           </div>
 
         </div>
 
-        {/* ================= RIGHT ================= */}
+        {/* Add document */}
 
-        <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={openUpload}
+          className="
+            flex
+            h-11
+            items-center
+            gap-2
+            rounded-xl
+            border
+            border-violet-400/15
+            bg-violet-500/[0.07]
+            px-3.5
+            text-[10px]
+            font-semibold
+            text-violet-300
+            transition-all
+            hover:border-violet-400/25
+            hover:bg-violet-500/[0.11]
+            hover:text-violet-200
+          "
+        >
+          <Plus size={14} />
 
-          {/* PDF Count */}
+          <span className="hidden sm:inline">
+            Add Document
+          </span>
 
-          <div className="hidden items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 lg:flex">
-
-            <div className="rounded-lg bg-violet-500/10 p-2">
-
-              <FileText
-                size={17}
-                className="text-violet-400"
-              />
-
-            </div>
-
-            <div>
-
-              <p className="text-[11px] uppercase tracking-wide text-slate-500">
-
-                Documents
-
-              </p>
-
-              <p className="text-sm font-semibold text-white">
-
-                {pdfCount} PDF{pdfCount !== 1 ? "s" : ""}
-
-              </p>
-
-            </div>
-
-          </div>
-
-          
-
-        </div>
+          <span className="sm:hidden">
+            Add
+          </span>
+        </button>
 
       </div>
 
     </header>
-
   );
-
 }
 
 export default ChatHeader;

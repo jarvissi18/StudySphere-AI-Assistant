@@ -7,6 +7,7 @@ import {
   Eye,
   RotateCcw,
   Award,
+  Sparkles,
 } from "lucide-react";
 
 import {
@@ -20,57 +21,206 @@ function QuizResult({
   setReviewMode,
   resetQuiz,
 }) {
-  const accuracy = calculateAccuracy(score, quiz.length);
-  const badge = getPerformanceBadge(accuracy);
+  const accuracy = calculateAccuracy(
+    score,
+    quiz.length
+  );
+
+  const badge =
+    getPerformanceBadge(accuracy);
 
   return (
-<div className="mx-auto max-w-3xl space-y-4">
-      {/* ==========================================
-          HERO CARD
-      ========================================== */}
+    <div className="mx-auto max-w-[900px] space-y-4">
 
-      <div className="overflow-hidden rounded-2xl border border-slate-700 bg-[#172033] shadow-xl">
+      {/* ======================================================
+          HERO
+      ====================================================== */}
 
-        {/* Header */}
+      <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-gradient-to-br from-[#11182d] via-[#0b1426] to-[#09101e] shadow-[0_20px_65px_rgba(0,0,0,0.22)]">
 
-        <div className="border-b border-slate-700 bg-gradient-to-r from-violet-900/30 via-indigo-900/20 to-slate-900 px-6 py-5 text-center">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/[0.10] blur-[100px]" />
 
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-violet-600/20 shadow-lg shadow-violet-900/30">
-            <Trophy className="h-7 w-7 text-yellow-400" />
+        <div className="relative px-6 py-7 text-center">
+
+          <div className="relative mx-auto mb-4 h-16 w-16">
+
+            <div className="absolute inset-0 rounded-full bg-violet-500/20 blur-xl" />
+
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-violet-400/15 bg-gradient-to-br from-violet-500 to-indigo-600 shadow-[0_12px_35px_rgba(124,58,237,0.25)]">
+
+              <Trophy
+                size={27}
+                className="text-yellow-300"
+              />
+
+            </div>
 
           </div>
 
-          <h1 className="text-xl font-bold tracking-tight text-white">
-            Quiz Completed
+          <div className="flex items-center justify-center gap-2">
+
+            <Sparkles
+              size={12}
+              className="text-violet-400"
+            />
+
+            <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-violet-400">
+              AI Assessment Complete
+            </span>
+
+          </div>
+
+          <h1 className="mt-2 text-[25px] font-bold tracking-[-0.03em] text-white">
+            Quiz completed
           </h1>
 
-          <p className="mt-1 text-sm text-slate-400">
-            Here's a summary of your quiz performance.
+          <p className="mt-1.5 text-[10px] text-slate-600">
+            Here's a summary of your performance.
           </p>
+
+          {/* Score */}
+
+          <div className="mt-6 flex justify-center">
+
+            <div className="relative flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 via-indigo-600 to-blue-600 shadow-[0_0_45px_rgba(124,58,237,0.22)]">
+
+              <div className="absolute inset-[6px] rounded-full bg-[#0c1426]" />
+
+              <div className="relative z-10 text-center">
+
+                <p className="text-[8px] font-semibold uppercase tracking-[0.22em] text-slate-600">
+                  Score
+                </p>
+
+                <p className="mt-1 text-4xl font-bold text-white">
+                  {score}
+                </p>
+
+                <p className="text-[11px] text-slate-500">
+                  / {quiz.length}
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Accuracy */}
+
+          <div className="mx-auto mt-5 max-w-md">
+
+            <div className="mb-2 flex items-center justify-between">
+
+              <span className="text-[9px] text-slate-600">
+                Accuracy
+              </span>
+
+              <span className="text-[10px] font-semibold text-white">
+                {accuracy}%
+              </span>
+
+            </div>
+
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.05]">
+
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 transition-all duration-700"
+                style={{
+                  width: `${accuracy}%`,
+                }}
+              />
+
+            </div>
+
+          </div>
+
+          {/* Badge */}
+
+          <div className="mt-5">
+
+            <div
+              className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r ${badge.gradient} px-3.5 py-1.5 shadow-lg`}
+            >
+
+              <Award size={14} />
+
+              <span className="text-[10px] font-semibold text-white">
+                {badge.title}
+              </span>
+
+            </div>
+
+            <p className="mx-auto mt-2 max-w-lg text-[10px] leading-5 text-slate-500">
+              {badge.description}
+            </p>
+
+          </div>
 
         </div>
 
-        {/* ==========================================
-            SCORE CIRCLE
-        ========================================== */}
+      </div>
 
-<div className="flex justify-center py-3">
-          <div className="relative flex h-26 w-26 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 shadow-[0_0_35px_rgba(124,58,237,0.35)]">
+      {/* ======================================================
+          STATS
+      ====================================================== */}
 
-            <div className="absolute inset-1.5 rounded-full bg-[#172033]" />
+      <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
 
-            <div className="relative z-10 text-center">
+        <StatCard
+          icon={<CheckCircle2 size={15} />}
+          title="Correct"
+          value={score}
+          color="emerald"
+        />
 
-              <p className="text-[9px] uppercase tracking-[0.25em] text-slate-400">
-                Score
+        <StatCard
+          icon={<XCircle size={15} />}
+          title="Wrong"
+          value={quiz.length - score}
+          color="rose"
+        />
+
+        <StatCard
+          icon={<ListChecks size={15} />}
+          title="Questions"
+          value={quiz.length}
+          color="violet"
+        />
+
+        <StatCard
+          icon={<Target size={15} />}
+          title="Accuracy"
+          value={`${accuracy}%`}
+          color="blue"
+        />
+
+      </div>
+
+      {/* ======================================================
+          PERFORMANCE
+      ====================================================== */}
+
+      <div
+        className={`rounded-2xl bg-gradient-to-r ${badge.gradient} p-[1px]`}
+      >
+
+        <div className="rounded-2xl bg-[#0b1426]/95 px-5 py-4">
+
+          <div className="flex items-start gap-3">
+
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06]">
+              <Award size={15} />
+            </div>
+
+            <div>
+
+              <p className="text-[10px] font-semibold text-white">
+                {badge.title}
               </p>
 
-              <h2 className="mt-1 text-3xl font-bold text-white">
-                {score}
-              </h2>
-
-              <p className="text-sm text-slate-300">
-                / {quiz.length}
+              <p className="mt-1 text-[9px] leading-4 text-slate-500">
+                {badge.description}
               </p>
 
             </div>
@@ -79,200 +229,125 @@ function QuizResult({
 
         </div>
 
-        {/* ==========================================
-            ACCURACY
-        ========================================== */}
-
-        <div className="mx-auto max-w-lg px-6">
-
-          <div className="mb-2 flex items-center justify-between text-xs font-medium text-slate-400">
-
-            <span>Accuracy</span>
-
-            <span>{accuracy}%</span>
-
-          </div>
-
-          <div className="h-2 overflow-hidden rounded-full bg-slate-800">
-
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-500 transition-all duration-700"
-              style={{
-                width: `${accuracy}%`,
-              }}
-            />
-
-          </div>
-
-        </div>
-
-        {/* ==========================================
-            PERFORMANCE BADGE
-        ========================================== */}
-
-        <div className="px-6 pt-4 pb-5 text-center">
-
-          <div
-            className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r ${badge.gradient} px-4 py-1.5 shadow-lg`}
-          >
-
-            <Award size={18} />
-
-            <span className="text-sm font-semibold text-white">
-              {badge.title}
-            </span>
-
-          </div>
-
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-400">
-            {badge.description}
-          </p>
-
-        </div>
-
-                {/* ==========================================
-            STATISTICS
-        ========================================== */}
-
-        <div className="grid gap-2 p-2 grid-cols-2 lg:grid-cols-4">
-
-          {/* Correct */}
-
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-2.5 transition-all duration-300 hover:border-green-500">
-            <CheckCircle2 className="mb-3 h-6 w-6 text-green-400" />
-
-            <p className="text-sm text-slate-400">
-              Correct
-            </p>
-
-            <h2 className="mt-2 text-2xl font-bold text-green-400">
-              {score}
-            </h2>
-          </div>
-
-          {/* Wrong */}
-
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-3 transition-all duration-300 hover:border-red-500">
-            <XCircle className="mb-3 h-6 w-6 text-red-400" />
-
-            <p className="text-sm text-slate-400">
-              Wrong
-            </p>
-
-            <h2 className="mt-2 text-xl font-bold text-red-400">
-              {quiz.length - score}
-            </h2>
-          </div>
-
-          {/* Total */}
-
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-3 transition-all duration-300 hover:border-violet-500">
-            <ListChecks className="mb-3 h-6 w-6 text-violet-400" />
-
-            <p className="text-sm text-slate-400">
-              Total Questions
-            </p>
-
-            <h2 className="mt-2 text-3xl font-bold text-violet-400">
-              {quiz.length}
-            </h2>
-          </div>
-
-          {/* Accuracy */}
-
-          <div className="rounded-2xl border border-slate-700 bg-slate-800 p-3 transition-all duration-300 hover:border-blue-500">
-            <Target className="mb-3 h-6 w-6 text-blue-400" />
-
-            <p className="text-sm text-slate-400">
-              Accuracy
-            </p>
-
-            <h2 className="mt-2 text-2xl font-bold text-blue-400">
-              {accuracy}%
-            </h2>
-          </div>
-
-        </div>
-
       </div>
 
-      {/* ==========================================
-          PERFORMANCE SUMMARY
-      ========================================== */}
+      {/* ======================================================
+          ACTIONS
+      ====================================================== */}
 
-      <div
-        className={`rounded-3xl bg-gradient-to-r ${badge.gradient} p-4 text-center shadow-xl`}
-      >
-        <h2 className="text-xl font-bold text-white">
-          {badge.title}
-        </h2>
-
-        <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-white/90">
-          {badge.description}
-        </p>
-      </div>
-
-      {/* ==========================================
-          ACTION BUTTONS
-      ========================================== */}
-
-      <div className="grid gap-2 md:grid-cols-2">
+      <div className="grid gap-2.5 sm:grid-cols-2">
 
         <button
-          onClick={() => setReviewMode(true)}
+          type="button"
+          onClick={() =>
+            setReviewMode(true)
+          }
           className="
+            group
             flex
-            items-center
-            justify-center
-            gap-2
-            rounded-2xl
-            bg-gradient-to-r
-            from-violet-600
-            to-indigo-600
-            py-3
-            text-base
-            font-semibold
-            text-white
-            shadow-lg
-            transition-all
-            duration-300
-            hover:-translate-y-0.5
-            hover:shadow-violet-900/40
-          "
-        >
-          <Eye size={20} />
-
-          Review Answers
-        </button>
-
-        <button
-          onClick={resetQuiz}
-          className="
-            flex
+            h-[45px]
             items-center
             justify-center
             gap-2
             rounded-xl
             border
-            border-slate-700
-            bg-slate-800
-            py-3.5
-            text-base
+            border-violet-400/20
+            bg-gradient-to-r
+            from-violet-600
+            to-indigo-600
+            text-[11px]
             font-semibold
             text-white
-            shadow-lg
-            transition-all
-            duration-300
-            hover:-translate-y-0.5
-            hover:bg-slate-700
+            shadow-[0_10px_28px_rgba(124,58,237,0.18)]
+            transition
+            hover:-translate-y-[1px]
+            hover:shadow-[0_14px_35px_rgba(124,58,237,0.25)]
           "
         >
-          <RotateCcw size={20} />
+
+          <Eye size={15} />
+
+          Review Answers
+
+        </button>
+
+        <button
+          type="button"
+          onClick={resetQuiz}
+          className="
+            flex
+            h-[45px]
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
+            border
+            border-white/[0.07]
+            bg-white/[0.025]
+            text-[11px]
+            font-semibold
+            text-slate-300
+            transition
+            hover:border-white/[0.12]
+            hover:bg-white/[0.05]
+            hover:text-white
+          "
+        >
+
+          <RotateCcw size={15} />
 
           Generate New Quiz
+
         </button>
 
       </div>
+
+    </div>
+  );
+}
+
+function StatCard({
+  icon,
+  title,
+  value,
+  color,
+}) {
+  const colors = {
+    emerald:
+      "bg-emerald-500/10 text-emerald-300",
+    rose:
+      "bg-rose-500/10 text-rose-300",
+    violet:
+      "bg-violet-500/10 text-violet-300",
+    blue:
+      "bg-blue-500/10 text-blue-300",
+  };
+
+  const valueColors = {
+    emerald: "text-emerald-300",
+    rose: "text-rose-300",
+    violet: "text-violet-300",
+    blue: "text-blue-300",
+  };
+
+  return (
+    <div className="rounded-2xl border border-white/[0.06] bg-[#0b1426]/90 p-4">
+
+      <div
+        className={`mb-3 flex h-8 w-8 items-center justify-center rounded-lg ${colors[color]}`}
+      >
+        {icon}
+      </div>
+
+      <p className="text-[9px] text-slate-700">
+        {title}
+      </p>
+
+      <p
+        className={`mt-1.5 text-2xl font-bold ${valueColors[color]}`}
+      >
+        {value}
+      </p>
 
     </div>
   );

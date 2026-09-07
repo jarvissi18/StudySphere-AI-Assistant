@@ -1,4 +1,8 @@
-import { ArrowUp } from "lucide-react";
+import {
+  ArrowUp,
+  Paperclip,
+  Loader2,
+} from "lucide-react";
 
 function ChatInput({
   question,
@@ -6,107 +10,178 @@ function ChatInput({
   askQuestion,
   loading,
 }) {
+  const handleKeyDown = (event) => {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+      event.preventDefault();
+
+      if (!loading && question.trim()) {
+        askQuestion();
+      }
+    }
+  };
+
   return (
-    <div className="mx-auto w-full max-w-6xl px-6 pt-3 pb-4">
+    <div
+      className="
+        mx-auto
+        w-full
+        max-w-[900px]
+        px-4
+        pb-4
+        pt-2
+        sm:px-6
+      "
+    >
+
+      {/* =====================================================
+          INPUT BAR
+      ===================================================== */}
 
       <div
         className="
-          rounded-3xl
+          relative
+          flex
+          min-h-[48px]
+          items-center
+          gap-2
+          overflow-hidden
+          rounded-xl
           border
-          border-slate-700
-          bg-[#1E293B]
-          shadow-[0_15px_40px_rgba(0,0,0,0.30)]
+          border-white/[0.07]
+          bg-[#101a2d]
+          px-3
+          shadow-[0_10px_35px_rgba(0,0,0,0.18)]
           transition-all
-          duration-300
-          focus-within:border-violet-500
-          hover:border-slate-500
+          duration-200
+          focus-within:border-violet-400/15
+          focus-within:bg-[#111c31]
+          focus-within:shadow-[0_12px_40px_rgba(124,58,237,0.06)]
         "
       >
 
-        <div className="flex items-end gap-3 p-3">
+        {/* ==================================================
+            ATTACHMENT
+        ================================================== */}
 
-          {/* Textarea */}
+        <button
+          type="button"
+          disabled={loading}
+          className="
+            flex
+            h-7
+            w-7
+            shrink-0
+            items-center
+            justify-center
+            rounded-lg
+            text-slate-700
+            transition
+            hover:bg-white/[0.035]
+            hover:text-slate-400
+            disabled:cursor-not-allowed
+            disabled:opacity-30
+          "
+          aria-label="Attach document"
+        >
+          <Paperclip size={13} />
+        </button>
 
-          <textarea
-            rows={1}
-            value={question}
-            disabled={loading}
-            placeholder="Ask anything about your uploaded PDFs..."
-            onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                askQuestion();
-              }
-            }}
-            className="
-              flex-1
-              resize-none
-              bg-transparent
-              text-white
-              placeholder:text-slate-500
-              outline-none
-              text-[15px]
-              leading-6
-              min-h-[44px]
-              max-h-40
-              py-2
-            "
-          />
+        {/* ==================================================
+            TEXTAREA
+        ================================================== */}
 
-          {/* Send Button */}
+        <textarea
+          value={question}
+          onChange={(event) =>
+            setQuestion(event.target.value)
+          }
+          onKeyDown={handleKeyDown}
+          disabled={loading}
+          rows={1}
+          placeholder="Type your question here..."
+          className="
+            max-h-[100px]
+            min-h-[30px]
+            flex-1
+            resize-none
+            overflow-y-auto
+            bg-transparent
+            py-1.5
+            text-[9px]
+            leading-5
+            text-slate-300
+            outline-none
+            placeholder:text-slate-700
+            disabled:cursor-not-allowed
+            disabled:opacity-50
+          "
+        />
 
-          <button
-            onClick={askQuestion}
-            disabled={loading || !question.trim()}
-            className="
-              flex
-              h-11
-              w-11
-              items-center
-              justify-center
-              rounded-xl
-              bg-gradient-to-r
-              from-violet-600
-              to-indigo-600
-              text-white
-              shadow-lg
-              transition
-              duration-300
-              hover:scale-105
-              hover:shadow-violet-900/40
-              disabled:opacity-40
-              disabled:cursor-not-allowed
-            "
-          >
-            <ArrowUp size={18} />
-          </button>
+        {/* ==================================================
+            SEND
+        ================================================== */}
 
-        </div>
+        <button
+          type="button"
+          onClick={() => askQuestion()}
+          disabled={
+            loading ||
+            !question.trim()
+          }
+          className="
+            flex
+            h-7
+            w-7
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            bg-gradient-to-br
+            from-violet-500
+            to-indigo-600
+            text-white
+            shadow-[0_6px_18px_rgba(124,58,237,0.22)]
+            transition-all
+            duration-200
+            hover:scale-[1.05]
+            hover:shadow-[0_8px_22px_rgba(124,58,237,0.30)]
+            active:scale-[0.95]
+            disabled:cursor-not-allowed
+            disabled:opacity-30
+          "
+          aria-label="Send message"
+        >
+
+          {loading ? (
+            <Loader2
+              size={13}
+              className="animate-spin"
+            />
+          ) : (
+            <ArrowUp size={14} />
+          )}
+
+        </button>
 
       </div>
 
-      {/* Footer */}
+      {/* =====================================================
+          SMALL FOOTER
+      ===================================================== */}
 
-      <div className="mt-2 flex flex-col gap-1 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-
-        <p>
-          Press{" "}
-          <span className="font-medium text-slate-300">
-            Enter
-          </span>{" "}
-          to send •{" "}
-          <span className="font-medium text-slate-300">
-            Shift + Enter
-          </span>{" "}
-          for a new line
-        </p>
-
-        <p>
-          AI responses may contain mistakes.
-        </p>
-
-      </div>
+      <p
+        className="
+          mt-1.5
+          text-center
+          text-[6px]
+          text-slate-800
+        "
+      >
+        AI responses may contain mistakes.
+      </p>
 
     </div>
   );
