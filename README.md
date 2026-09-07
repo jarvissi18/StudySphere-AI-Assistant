@@ -1,387 +1,453 @@
 <div align="center">
 
-# 🚀 StudySphere AI Assistant
+# ✦ StudySphere AI Assistant
 
-### AI-Powered Study Assistant using RAG, FastAPI, React, ChromaDB & Google Gemini
+### Your AI-powered study workspace for understanding, revising, and mastering documents.
 
-<p align="center">
-An intelligent study companion that transforms uploaded PDF documents into interactive learning experiences through AI-powered Chat, Summaries, Notes, Flashcards, and Quizzes.
-</p>
+**Transform static PDFs into an interactive learning experience with AI-powered chat, summaries, notes, flashcards, and quizzes.**
 
-<p align="center">
+<br />
 
-![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge\&logo=github)](https://github.com/jarvissi18/StudySphere-AI-Assistant)
+[![License](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![ChromaDB](https://img.shields.io/badge/ChromaDB-7B61FF?style=for-the-badge)
-![Google Gemini](https://img.shields.io/badge/Google_Gemini-AI-4285F4?style=for-the-badge)
-![JWT](https://img.shields.io/badge/JWT-Authentication-orange?style=for-the-badge)
+<br />
 
-</p>
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square\&logo=python\&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square\&logo=fastapi\&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square\&logo=react\&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square\&logo=vite\&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square\&logo=tailwindcss\&logoColor=white)
+![Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=flat-square\&logo=google\&logoColor=white)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_DB-7B61FF?style=flat-square)
+![JWT](https://img.shields.io/badge/JWT-Authentication-F59E0B?style=flat-square)
 
-<p align="center">
+<br />
 
-![Status](https://img.shields.io/badge/Status-Active_Development-success?style=flat-square)
-![Platform](https://img.shields.io/badge/Platform-Web-blue?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
-
-</p>
+**Built with React · FastAPI · RAG · ChromaDB · Google Gemini**
 
 </div>
 
 ---
 
-# 📖 Overview
+## ✨ What is StudySphere?
 
-**StudySphere AI Assistant** is an AI-powered learning platform designed to improve the way students interact with study materials.
+**StudySphere AI Assistant** is a full-stack AI learning platform that turns your study documents into an intelligent, interactive workspace.
 
-Instead of simply reading PDFs, students can upload their notes and use Artificial Intelligence to:
+Instead of manually reading a PDF, creating notes, preparing questions, and revising everything yourself, StudySphere lets you interact directly with your study material using AI.
 
-- 💬 Ask questions from uploaded documents
-- 📝 Generate structured summaries
-- 📒 Create revision notes
-- 🧠 Generate flashcards
-- 🎯 Practice with AI-generated quizzes
+Upload your document → let StudySphere understand it → learn from it.
 
-The application combines **Retrieval-Augmented Generation (RAG)** with **Google Gemini AI** to provide context-aware responses based on uploaded study materials.
+### With StudySphere, you can:
 
----
+* 💬 **Chat with your study material**
+* 📄 **Upload and process PDF documents**
+* 📝 **Generate structured summaries**
+* 📚 **Create exam-oriented notes**
+* 🧠 **Generate interactive flashcards**
+* 🎯 **Create AI-powered quizzes**
+* 📊 **Review quiz performance**
+* 🔐 **Manage your account securely**
 
-# ✨ Key Features
+The core AI experience is powered by **Retrieval-Augmented Generation (RAG)**, allowing relevant document content to be retrieved before generating responses with Google Gemini.
 
-### 🤖 AI Chat
 
-- Context-aware conversations
-- Answers based on uploaded PDFs
-- Retrieval-Augmented Generation (RAG)
-- AI-powered question answering
+# 🎯 Why StudySphere?
 
----
+Traditional study workflows require students to switch between multiple tools.
 
-### 📑 Smart PDF Processing
+| Traditional Workflow         | StudySphere                |
+| ---------------------------- | -------------------------- |
+| 📖 Read the entire PDF       | 🤖 Ask AI directly         |
+| ✍️ Write notes manually      | 📝 Generate notes          |
+| 📄 Create summaries yourself | ⚡ AI-generated summaries   |
+| 🧠 Make flashcards manually  | 🎴 Generate flashcards     |
+| ❓ Prepare MCQs manually      | 🎯 AI-generated quizzes    |
+| 🔍 Search through pages      | 💬 Ask questions naturally |
+| 🔄 Use multiple study tools  | ✦ One AI study workspace   |
 
-- Upload study material
-- Automatic text extraction
-- Intelligent chunking
-- Vector embedding generation
-- Semantic search using ChromaDB
-
----
-
-### 📝 AI Summary
-
-Generate concise summaries including:
-
-- Key Concepts
-- Important Points
-- Definitions
-- Advantages & Disadvantages
-- Quick Revision Notes
+> **StudySphere is designed to reduce the friction between studying and understanding.**
 
 ---
 
-### 📒 AI Notes
+# ✨ Core Features
 
-Automatically generate:
+## 💬 AI Document Chat
 
-- Topic-wise notes
-- Organized headings
-- Bullet points
-- Exam-oriented explanations
-- Revision-friendly content
+Ask questions about your uploaded study material and receive context-aware answers.
 
----
+**Powered by:**
 
-### 🧠 AI Flashcards
-
-Convert study material into interactive flashcards for:
-
-- Active Recall
-- Self Testing
-- Memory Retention
-- Quick Revision
+* Retrieval-Augmented Generation
+* Semantic document search
+* Vector embeddings
+* Google Gemini
+* Context-aware prompting
 
 ---
 
-### 🎯 AI Quiz
+## 📄 Intelligent PDF Processing
 
-Generate quizzes directly from uploaded PDFs.
+Upload your study material and let the backend prepare it for AI interaction.
 
-Features include:
+### Processing pipeline
 
-- Multiple Choice Questions
-- Score Calculation
-- Quiz Review
-- Performance Feedback
-
----
-
-### 🔐 Authentication
-
-- User Registration
-- User Login
-- JWT Authentication
-- Protected Routes
-- Secure Password Hashing
-
----
-
-# 📸 Project Preview
-
-## 🔐 Login
-
-<p align="center">
-<img src="docs/login.png" width="900">
-</p>
+```text
+PDF
+ │
+ ▼
+Text Extraction
+ │
+ ▼
+Text Chunking
+ │
+ ▼
+Embedding Generation
+ │
+ ▼
+ChromaDB
+ │
+ ▼
+Semantic Retrieval
+```
 
 ---
 
-## 📝 Register
+## 📝 AI Summaries
 
-<p align="center">
-<img src="docs/register.png" width="900">
-</p>
+Convert lengthy study material into concise revision-friendly summaries.
 
----
+Generated content can include:
 
-## 🏠 Dashboard
-
-<p align="center">
-<img src="docs/dashboard.png" width="900">
-</p>
-
----
-
-## 📂 PDF Upload
-
-<p align="center">
-<img src="docs/upload-pdf.png" width="900">
-</p>
+* Key concepts
+* Important points
+* Definitions
+* Explanations
+* Advantages & disadvantages
+* Quick revision material
 
 ---
 
-## 💬 AI Chat
+## 📚 AI Notes
 
-<p align="center">
-<img src="docs/chat.png" width="900">
-</p>
+Generate structured notes directly from your uploaded material.
 
----
+Designed for:
 
-## 📝 AI Summary
-
-<p align="center">
-<img src="docs/summary.png" width="900">
-</p>
-
----
-
-## 📒 AI Notes
-
-<p align="center">
-<img src="docs/notes.png" width="900">
-</p>
+* Exam preparation
+* Topic-wise revision
+* Quick learning
+* Concept understanding
+* Last-minute revision
 
 ---
 
 ## 🧠 AI Flashcards
 
-<p align="center">
-<img src="docs/flashcard.png" width="900">
-</p>
+Turn study material into interactive question-and-answer cards.
+
+Useful for:
+
+* Active recall
+* Self-testing
+* Memory retention
+* Quick revision
 
 ---
 
 ## 🎯 AI Quiz
 
+Generate quizzes from your study material.
+
+### Quiz experience
+
+* Multiple-choice questions
+* Answer selection
+* Automatic scoring
+* Result review
+* Performance feedback
+
+---
+
+## 🔐 Authentication & Security
+
+StudySphere includes a dedicated authentication layer with:
+
+* User registration
+* User login
+* JWT-based authentication
+* Protected routes
+* Password hashing
+* Environment-based secrets
+
+---
+
+# 🖥️ Application Preview
+
+> Screenshots are stored inside the `/docs` directory of the repository.
+
+### 🔐 Authentication
+
 <p align="center">
-<img src="docs/quiz.png" width="900">
+<img src="docs/login.png" alt="StudySphere Login" width="900">
+</p>
+
+<p align="center"><sub>Secure user authentication</sub></p>
+
+---
+
+### 📝 Registration
+
+<p align="center">
+<img src="docs/register.png" alt="StudySphere Register" width="900">
 </p>
 
 ---
 
-## 📊 Quiz Result
+### 🏠 Dashboard
 
 <p align="center">
-<img src="docs/quiz-result.png" width="900">
+<img src="docs/dashboard.png" alt="StudySphere Dashboard" width="900">
 </p>
 
 ---
 
-# 🎯 Project Objectives
+### 📂 PDF Upload
 
-StudySphere AI aims to:
-
-- Improve learning efficiency
-- Enable AI-assisted revision
-- Reduce manual note-taking
-- Make studying interactive
-- Enhance concept understanding
-- Simplify exam preparation
+<p align="center">
+<img src="docs/upload-pdf.png" alt="StudySphere PDF Upload" width="900">
+</p>
 
 ---
 
-# 🌟 Highlights
+### 💬 AI Chat
 
-✅ Modern Responsive UI
-
-✅ Retrieval-Augmented Generation (RAG)
-
-✅ FastAPI Backend
-
-✅ React + Vite Frontend
-
-✅ Google Gemini Integration
-
-✅ ChromaDB Vector Database
-
-✅ JWT Authentication
-
-✅ AI Study Companion
+<p align="center">
+<img src="docs/chat.png" alt="StudySphere AI Chat" width="900">
+</p>
 
 ---
+
+### 📝 AI Summary
+
+<p align="center">
+<img src="docs/summary.png" alt="StudySphere AI Summary" width="900">
+</p>
+
+---
+
+### 📚 AI Notes
+
+<p align="center">
+<img src="docs/notes.png" alt="StudySphere AI Notes" width="900">
+</p>
+
+---
+
+### 🧠 AI Flashcards
+
+<p align="center">
+<img src="docs/flashcard.png" alt="StudySphere AI Flashcards" width="900">
+</p>
+
+---
+
+### 🎯 AI Quiz
+
+<p align="center">
+<img src="docs/quiz.png" alt="StudySphere AI Quiz" width="900">
+</p>
+
+---
+
+### 📊 Quiz Results
+
+<p align="center">
+<img src="docs/quiz-result.png" alt="StudySphere Quiz Results" width="900">
+</p>
+
+---
+
+# 🏗️ Architecture
+
+StudySphere follows a modern full-stack architecture combining a React frontend, FastAPI backend, vector search, and generative AI.
+
+```text
+                         ┌─────────────────────┐
+                         │       STUDENT       │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │    React + Vite     │
+                         │    Tailwind CSS     │
+                         └──────────┬──────────┘
+                                    │
+                              REST / Axios
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │      FastAPI        │
+                         │      Backend        │
+                         └──────────┬──────────┘
+                                    │
+              ┌─────────────────────┼─────────────────────┐
+              │                     │                     │
+              ▼                     ▼                     ▼
+       ┌─────────────┐      ┌──────────────┐      ┌──────────────┐
+       │     Auth    │      │ PDF Pipeline │      │  AI Services │
+       └──────┬──────┘      └──────┬───────┘      └──────┬───────┘
+              │                    │                     │
+              ▼                    ▼                     ▼
+       ┌─────────────┐      ┌──────────────┐      ┌──────────────┐
+       │    SQLite   │      │   ChromaDB   │      │ Google Gemini│
+       └─────────────┘      └──────────────┘      └──────────────┘
+```
+
+---
+
+# 🧠 RAG Architecture
+
+The AI chat system uses **Retrieval-Augmented Generation** to ground responses in uploaded study material.
+
+```text
+                    DOCUMENT INGESTION
+                           │
+                           ▼
+                     Upload PDF
+                           │
+                           ▼
+                    Extract Text
+                           │
+                           ▼
+                    Split into Chunks
+                           │
+                           ▼
+                  Generate Embeddings
+                           │
+                           ▼
+                     Store Vectors
+                           │
+                           ▼
+                       ChromaDB
+                           │
+                           │
+                    ───────┼───────
+                           │
+                           ▼
+                    USER QUESTION
+                           │
+                           ▼
+                  Generate Query Embedding
+                           │
+                           ▼
+                    Semantic Search
+                           │
+                           ▼
+                 Retrieve Relevant Chunks
+                           │
+                           ▼
+                 Build Context + Prompt
+                           │
+                           ▼
+                     Google Gemini
+                           │
+                           ▼
+                  Contextual AI Response
+```
+
+### Why RAG?
+
+RAG allows the application to retrieve relevant information from the user's documents before generating an answer.
+
+This makes the AI experience more document-focused than a generic chatbot.
+
+---
+
 # ⚙️ Technology Stack
 
-## 🎨 Frontend
+## Frontend
 
-| Technology | Purpose |
-|------------|---------|
-| React.js | User Interface |
-| Vite | Fast Development & Build Tool |
-| Tailwind CSS | Responsive UI Styling |
-| Axios | API Communication |
-| React Markdown | Markdown Rendering |
-| jsPDF | PDF Export |
-| Lucide React | Modern Icons |
+| Technology         | Role                           |
+| ------------------ | ------------------------------ |
+| **React.js**       | Component-based user interface |
+| **Vite**           | Development and build tooling  |
+| **Tailwind CSS**   | Responsive UI styling          |
+| **Axios**          | API communication              |
+| **React Markdown** | Markdown response rendering    |
+| **jsPDF**          | PDF export                     |
+| **Lucide React**   | Interface icons                |
 
----
+## Backend
 
-## ⚡ Backend
+| Technology   | Role               |
+| ------------ | ------------------ |
+| **Python**   | Backend language   |
+| **FastAPI**  | REST API framework |
+| **Uvicorn**  | ASGI server        |
+| **Pydantic** | Data validation    |
+| **JWT**      | Authentication     |
+| **Passlib**  | Password hashing   |
 
-| Technology | Purpose |
-|------------|---------|
-| FastAPI | REST API Development |
-| Python | Backend Programming |
-| JWT | Authentication |
-| Passlib | Password Hashing |
-| Pydantic | Data Validation |
-| Uvicorn | ASGI Server |
+## AI & Retrieval
 
----
+| Technology                | Role                     |
+| ------------------------- | ------------------------ |
+| **Google Gemini**         | Generative AI            |
+| **ChromaDB**              | Vector database          |
+| **Sentence Transformers** | Embeddings               |
+| **RAG**                   | Context-aware generation |
 
-## 🤖 Artificial Intelligence
+## Data
 
-| Technology | Purpose |
-|------------|---------|
-| Google Gemini | AI Content Generation |
-| ChromaDB | Vector Database |
-| Sentence Transformers | Embedding Generation |
-| RAG | Context-aware AI Responses |
-
----
-
-## 💾 Database
-
-| Technology | Purpose |
-|------------|---------|
-| SQLite | User & Application Data |
-| ChromaDB | Vector Storage for PDFs |
-
----
-
-# 🏗️ System Architecture
-
-```text
-                ┌──────────────────────────┐
-                │        React UI          │
-                └────────────┬─────────────┘
-                             │
-                       Axios API Calls
-                             │
-                ┌────────────▼─────────────┐
-                │        FastAPI API       │
-                └────────────┬─────────────┘
-                             │
-          ┌──────────────────┼──────────────────┐
-          │                  │                  │
-          ▼                  ▼                  ▼
- Authentication        PDF Processing      AI Services
-          │                  │                  │
-          ▼                  ▼                  ▼
-     SQLite DB       ChromaDB Vector DB   Gemini AI
-```
-
----
-
-# 🧠 Retrieval-Augmented Generation (RAG) Workflow
-
-```text
-PDF Upload
-     │
-     ▼
-Extract Text
-     │
-     ▼
-Chunk Text
-     │
-     ▼
-Generate Embeddings
-     │
-     ▼
-Store in ChromaDB
-     │
-     ▼
-User Question
-     │
-     ▼
-Semantic Search
-     │
-     ▼
-Relevant Chunks Retrieved
-     │
-     ▼
-Gemini AI
-     │
-     ▼
-Context-Aware Response
-```
+| Technology   | Role                    |
+| ------------ | ----------------------- |
+| **SQLite**   | Application/user data   |
+| **ChromaDB** | Document vector storage |
 
 ---
 
 # 📂 Project Structure
 
 ```text
-StudySphere-AI-Assistant
+StudySphere-AI-Assistant/
 │
-├── backend
-│   ├── auth
-│   ├── database
-│   ├── routes
-│   ├── schemas
-│   ├── services
-│   ├── uploads
+├── backend/
+│   ├── auth/
+│   ├── database/
+│   ├── routes/
+│   ├── schemas/
+│   ├── services/
+│   ├── uploads/
 │   ├── main.py
 │   └── requirements.txt
 │
-├── frontend
-│   ├── public
-│   ├── src
-│   │   ├── components
-│   │   ├── context
-│   │   ├── pages
-│   │   ├── services
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── services/
 │   │   └── App.jsx
 │   │
 │   ├── package.json
 │   └── vite.config.js
 │
-├── docs
+├── docs/
+│   ├── login.png
+│   ├── register.png
+│   ├── dashboard.png
+│   ├── upload-pdf.png
+│   ├── chat.png
+│   ├── summary.png
+│   ├── notes.png
+│   ├── flashcard.png
+│   ├── quiz.png
+│   └── quiz-result.png
 │
 ├── .gitignore
-│
+├── LICENSE
 └── README.md
 ```
 
@@ -389,65 +455,75 @@ StudySphere-AI-Assistant
 
 # 🚀 Getting Started
 
-## Clone Repository
+## Prerequisites
+
+Make sure the following are installed:
+
+* **Python 3.11+**
+* **Node.js**
+* **npm**
+* **Git**
+* A **Google Gemini API key**
+
+---
+
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/jarvissi18/StudySphere-AI-Assistant.git
-```
 
-```bash
 cd StudySphere-AI-Assistant
 ```
 
 ---
 
-# ⚙️ Backend Setup
+# ⚡ Backend Setup
 
-Navigate to backend
+Navigate to the backend:
 
 ```bash
 cd backend
 ```
 
-Create Virtual Environment
+### Create a virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-Activate Virtual Environment
+### Activate the environment
 
-### Windows
+#### Windows
 
 ```bash
 venv\Scripts\activate
 ```
 
-### Linux / macOS
+#### Linux / macOS
 
 ```bash
 source venv/bin/activate
 ```
 
-Install Dependencies
+### Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run Backend
+### Start the API server
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Backend runs at
+Backend:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-Swagger API Documentation
+Interactive API documentation:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -457,25 +533,25 @@ http://127.0.0.1:8000/docs
 
 # 💻 Frontend Setup
 
-Open another terminal
+Open a new terminal.
 
 ```bash
 cd frontend
 ```
 
-Install Packages
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-Run Frontend
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Frontend runs at
+Frontend:
 
 ```text
 http://localhost:5173
@@ -483,435 +559,277 @@ http://localhost:5173
 
 ---
 
-# 🔑 Environment Variables
+# 🔑 Environment Configuration
 
-Create a `.env` file inside the `backend` directory.
+Create:
+
+```text
+backend/.env
+```
 
 Example:
 
 ```env
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-SECRET_KEY=YOUR_SECRET_KEY
+GEMINI_API_KEY=your_gemini_api_key
+SECRET_KEY=your_secret_key
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 ```
 
-> **Note:** Do not commit your `.env` file to GitHub. Use your own API keys and secrets for local development.
+### ⚠️ Security
+
+Never commit `.env` files or API keys to GitHub.
+
+Make sure `.env` is included in `.gitignore`.
 
 ---
 
-# 🔄 Application Workflow
+# 📡 API Overview
+
+## Authentication
+
+| Method | Endpoint    | Purpose               |
+| ------ | ----------- | --------------------- |
+| `POST` | `/register` | Create account        |
+| `POST` | `/login`    | Authenticate user     |
+| `GET`  | `/auth/me`  | Retrieve current user |
+
+## Documents
+
+| Method   | Endpoint            | Purpose             |
+| -------- | ------------------- | ------------------- |
+| `POST`   | `/upload`           | Upload PDF          |
+| `GET`    | `/files`            | List uploaded files |
+| `DELETE` | `/delete-file/{id}` | Delete document     |
+
+## AI
+
+| Method | Endpoint               | Purpose             |
+| ------ | ---------------------- | ------------------- |
+| `POST` | `/ask`                 | Ask questions       |
+| `POST` | `/generate-summary`    | Generate summary    |
+| `POST` | `/generate-notes`      | Generate notes      |
+| `POST` | `/generate-flashcards` | Generate flashcards |
+| `POST` | `/generate-quiz`       | Generate quiz       |
+
+> API routes may evolve as the project continues to develop. Use the FastAPI Swagger documentation at `/docs` as the runtime API reference.
+
+---
+
+# 🔄 End-to-End Workflow
 
 ```text
-User Login
-      │
-      ▼
-Upload PDF
-      │
-      ▼
-Extract Text
-      │
-      ▼
-Generate Embeddings
-      │
-      ▼
-Store in ChromaDB
-      │
-      ▼
-Select Feature
-(Chat / Summary / Notes /
-Flashcards / Quiz)
-      │
-      ▼
-Gemini AI
-      │
-      ▼
-Generate Response
+┌─────────────────┐
+│   User Login    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Upload PDF    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Extract Content │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Generate Vector │
+│   Embeddings    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│    ChromaDB     │
+└────────┬────────┘
+         │
+         ▼
+┌────────────────────────────┐
+│ Select Learning Experience │
+│                            │
+│ Chat | Summary | Notes     │
+│ Flashcards | Quiz          │
+└────────────┬───────────────┘
+             │
+             ▼
+      ┌──────────────┐
+      │ Gemini + RAG │
+      └──────┬───────┘
+             │
+             ▼
+      ┌──────────────┐
+      │ AI Response  │
+      └──────────────┘
 ```
 
 ---
 
-# 📡 API Endpoints
+# 📊 Feature Status
 
-## Authentication
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/register` | Register a new user |
-| POST | `/login` | User login |
-| GET | `/auth/me` | Get current user |
-
----
-
-## PDF Management
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/upload` | Upload PDF |
-| GET | `/files` | List uploaded PDFs |
-| DELETE | `/delete-file/{id}` | Delete PDF |
-
----
-
-## AI Features
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/ask` | AI Chat |
-| POST | `/generate-summary` | Generate Summary |
-| POST | `/generate-notes` | Generate Notes |
-| POST | `/generate-flashcards` | Generate Flashcards |
-| POST | `/generate-quiz` | Generate Quiz |
+| Feature                  | Status |
+| ------------------------ | :----: |
+| User Authentication      |    ✅   |
+| JWT Authorization        |    ✅   |
+| PDF Upload               |    ✅   |
+| PDF Processing           |    ✅   |
+| Vector Embeddings        |    ✅   |
+| ChromaDB Integration     |    ✅   |
+| RAG-based AI Chat        |    ✅   |
+| AI Summaries             |    ✅   |
+| AI Notes                 |    ✅   |
+| AI Flashcards            |    ✅   |
+| AI Quizzes               |    ✅   |
+| Quiz Scoring             |    ✅   |
+| Responsive UI            |    ✅   |
+| Live Frontend Deployment |    ✅   |
 
 ---
 
-# 🤖 AI Modules
+# 🛣️ Roadmap
 
-### 💬 AI Chat
+StudySphere is actively evolving.
 
-- Context-aware conversations
-- Answers generated from uploaded study material
-- Retrieval-Augmented Generation (RAG)
-- Semantic search using ChromaDB
+### 📚 Learning
 
----
+* [ ] AI Study Planner
+* [ ] Personalized learning paths
+* [ ] AI revision scheduler
+* [ ] Spaced repetition
+* [ ] Progress tracking
 
-### 📝 AI Summary
+### 🧠 AI
 
-- Structured summaries
-- Key concepts
-- Definitions
-- Advantages & Disadvantages
-- Quick revision notes
+* [ ] OCR for scanned documents
+* [ ] Multi-document conversations
+* [ ] AI mind maps
+* [ ] Better retrieval evaluation
+* [ ] Personalized AI tutor
 
----
+### 🖥️ Platform
 
-### 📒 AI Notes
-
-- Exam-oriented notes
-- Topic-wise organization
-- Bullet points
-- Revision-friendly formatting
-
----
-
-### 🧠 AI Flashcards
-
-- Interactive question-answer cards
-- Active recall learning
-- Quick revision
-- Memory retention
+* [ ] Multi-PDF workspaces
+* [ ] Cloud-based document storage
+* [ ] Docker support
+* [ ] Production backend deployment
+* [ ] Advanced analytics
 
 ---
 
-### 🎯 AI Quiz
+# 🔐 Security Considerations
 
-- AI-generated MCQs
-- Quiz scoring
-- Performance review
-- Instant feedback
+StudySphere follows several basic application security practices:
 
----
+* JWT-based authentication
+* Password hashing
+* Protected API routes
+* Environment-based secrets
+* No API keys stored in frontend source
+* `.env` excluded from version control
 
-# 🔒 Security Features
-
-- JWT Authentication
-- Password Hashing
-- Protected API Routes
-- Environment Variable Configuration
-- Secure User Sessions
+> For production deployment, additional controls such as HTTPS, rate limiting, secure cookie/token strategies, CORS hardening, logging, monitoring, and secret management should be implemented.
 
 ---
 
-# 📊 Current Features
+# 🎓 What This Project Demonstrates
 
-| Module | Status |
-|---------|:------:|
-| User Authentication | ✅ |
-| PDF Upload | ✅ |
-| AI Chat | ✅ |
-| AI Summary | ✅ |
-| AI Notes | ✅ |
-| AI Flashcards | ✅ |
-| AI Quiz | ✅ |
-| ChromaDB Integration | ✅ |
-| JWT Authentication | ✅ |
-| Responsive UI | ✅ |
+StudySphere is more than a UI project. It demonstrates practical full-stack and AI engineering concepts including:
 
----
-
-# 🚀 Future Roadmap
-
-- [ ] AI Study Planner
-- [ ] Voice-based AI Chat
-- [ ] OCR Support for Scanned PDFs
-- [ ] Multi-PDF Workspace
-- [ ] AI Mind Maps
-- [ ] AI Revision Scheduler
-- [ ] Spaced Repetition
-- [ ] Dark/Light Theme Toggle
-- [ ] Docker Support
-- [ ] Cloud Deployment
-
----
-
-# 🎓 Learning Outcomes
-
-This project demonstrates practical experience with:
-
-- Retrieval-Augmented Generation (RAG)
-- Large Language Model Integration
-- FastAPI Backend Development
-- React Frontend Development
-- REST API Design
-- JWT Authentication
-- Vector Databases (ChromaDB)
-- AI-powered Document Processing
-- Full Stack Application Development
+* Retrieval-Augmented Generation
+* Large Language Model integration
+* Vector databases
+* Semantic search
+* Document processing
+* Embedding generation
+* REST API development
+* React application architecture
+* Authentication & authorization
+* Database integration
+* AI-powered content generation
+* Full-stack application development
 
 ---
 
 # 🤝 Contributing
 
-Contributions are welcome!
+Contributions, suggestions, and improvements are welcome.
 
-If you would like to improve this project:
-
-1. Fork the repository
-2. Create a feature branch
+### Fork the project
 
 ```bash
-git checkout -b feature/new-feature
+git fork https://github.com/jarvissi18/StudySphere-AI-Assistant
 ```
 
-3. Commit your changes
+Or use GitHub's **Fork** button.
+
+### Create a branch
 
 ```bash
-git commit -m "feat: add new feature"
+git checkout -b feature/your-feature
 ```
 
-4. Push your branch
+### Commit your changes
 
 ```bash
-git push origin feature/new-feature
+git add .
+
+git commit -m "feat: add your feature"
 ```
 
-5. Open a Pull Request
+### Push
+
+```bash
+git push origin feature/your-feature
+```
+
+Then open a Pull Request.
 
 ---
 
-# 👨‍💻 Author
-
-**Swapnil Suryawanshi**
-
-Computer Engineering Student
-
-GitHub:
-
-https://github.com/jarvissi18
-
----
-
-# ⭐ Support
-
-If you found this project helpful:
-
-- ⭐ Star this repository
-- 🍴 Fork the project
-- 💡 Share feedback
-- 🛠️ Suggest improvements
-
----
-
-# 📄 License
-
-This project is intended for educational and learning purposes.
-
-A formal open-source license (such as MIT) can be added in future updates.
-
----
-
-# 🙏 Acknowledgements
-
-Special thanks to the open-source technologies that made this project possible:
-
-- FastAPI
-- React
-- Tailwind CSS
-- Vite
-- Google Gemini
-- ChromaDB
-- Sentence Transformers
-- Lucide React
-
----
+# 🧑‍💻 Author
 
 <div align="center">
 
-## ⭐ If you like this project, consider giving it a Star on GitHub!
+### Swapnil Suryawanshi
 
-### Built with ❤️ by Swapnil Suryawanshi
+**Computer Engineering Student · Full-Stack Developer**
+
+[![GitHub](https://img.shields.io/badge/GitHub-jarvissi18-181717?style=for-the-badge\&logo=github)](https://github.com/jarvissi18)
 
 </div>
 
 ---
 
-# 🏆 Why StudySphere AI?
+# 📄 License
 
-Unlike a traditional PDF reader, StudySphere AI transforms static study material into an interactive AI-powered learning experience.
+This project is licensed under the **MIT License**.
 
-| Traditional Study | StudySphere AI |
-|-------------------|----------------|
-| Read PDFs manually | 🤖 AI understands PDFs |
-| Make notes manually | 📝 AI generates Notes |
-| Write summaries | 📑 AI creates Summaries |
-| Create flashcards | 🧠 AI generates Flashcards |
-| Prepare MCQs manually | 🎯 AI generates Quizzes |
-| Search entire PDF | 🔍 Ask questions naturally |
+See the [LICENSE](LICENSE) file for details.
 
 ---
 
-# 📊 Project Statistics
+# 🙏 Acknowledgements
 
-| Category | Details |
-|----------|---------|
-| Frontend | React + Vite + Tailwind CSS |
-| Backend | FastAPI |
-| Authentication | JWT |
-| AI Model | Google Gemini |
-| Vector Database | ChromaDB |
-| Embedding Model | Sentence Transformers |
-| Database | SQLite |
-| Architecture | Retrieval-Augmented Generation (RAG) |
+Built with the help of amazing open-source technologies:
 
----
-
-# 📈 Project Workflow
-
-```text
-                    USER
-                      │
-                      ▼
-              Authentication
-                      │
-                      ▼
-               Upload PDF Files
-                      │
-                      ▼
-             Extract PDF Content
-                      │
-                      ▼
-             Generate Embeddings
-                      │
-                      ▼
-              Store in ChromaDB
-                      │
-                      ▼
-             Semantic Retrieval
-                      │
-                      ▼
-                 Google Gemini
-                      │
-      ┌───────────────┼───────────────┐
-      ▼               ▼               ▼
-   AI Chat       AI Summary      AI Notes
-      │               │               │
-      └───────────────┼───────────────┘
-                      ▼
-             AI Flashcards
-                      │
-                      ▼
-                AI Quiz
-```
-
----
-
-# 📸 Complete Application Preview
-
-| Module | Preview |
-|---------|---------|
-| Login | ![](docs/login.png) |
-| Register | ![](docs/register.png) |
-| Dashboard | ![](docs/dashboard.png) |
-| PDF Upload | ![](docs/upload-pdf.png) |
-| AI Chat | ![](docs/chat.png) |
-| Summary | ![](docs/summary.png) |
-| Notes | ![](docs/notes.png) |
-| Flashcards | ![](docs/flashcards.png) |
-| Quiz | ![](docs/quiz.png) |
-| Quiz Result | ![](docs/quiz-result.png) |
-
----
-
-# 💡 Key Highlights
-
-- 📄 Upload multiple study PDFs
-- 🤖 AI-powered contextual conversations
-- 📝 Automatic summary generation
-- 📒 Smart note generation
-- 🧠 Interactive flashcards
-- 🎯 AI-generated quizzes
-- 🔐 Secure JWT authentication
-- 📱 Responsive user interface
-- ⚡ FastAPI backend with modern architecture
-- 🔍 Semantic search using vector embeddings
-
----
-
-# 🎯 Suitable For
-
-This project is useful for:
-
-- 👨‍🎓 Students
-- 👩‍🏫 Teachers
-- 📚 Self-learners
-- 💼 Interview Preparation
-- 🧪 AI/ML Learning
-- 🎓 College Projects
-
----
-
-# 🌍 Deployment (Planned)
-
-| Platform | Status |
-|----------|--------|
-| Frontend (Vercel) | ⏳ Planned |
-| Backend (Render) | ⏳ Planned |
-| Database | ⏳ Planned |
-
----
-
-# 📝 Version History
-
-## v1.0.0
-
-- Initial Release
-- JWT Authentication
-- PDF Upload
-- AI Chat
-- AI Summary
-- AI Notes
-- AI Flashcards
-- AI Quiz
-- Responsive UI
-- ChromaDB Integration
-
----
-
-# 📬 Contact
-
-**Swapnil Suryawanshi**
-
-- GitHub: https://github.com/jarvissi18
+* [React](https://react.dev/)
+* [FastAPI](https://fastapi.tiangolo.com/)
+* [Vite](https://vite.dev/)
+* [Tailwind CSS](https://tailwindcss.com/)
+* [Google Gemini](https://ai.google.dev/)
+* [ChromaDB](https://www.trychroma.com/)
+* [Sentence Transformers](https://www.sbert.net/)
+* [Lucide](https://lucide.dev/)
 
 ---
 
 <div align="center">
 
-## 🚀 StudySphere AI Assistant
+# ✦ StudySphere AI Assistant
 
-### Empowering students with AI-powered learning.
+### Learn smarter. Revise faster. Understand better.
 
-⭐ **If you found this project useful, consider giving it a star!**
+<br />
+
 
 </div>
