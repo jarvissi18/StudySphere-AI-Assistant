@@ -3,17 +3,15 @@
 # Sentence-Transformers based document + query embeddings
 # ============================================================
 
-import os
 from typing import (
+    Any,
     List,
     Sequence,
 )
 
-import numpy as np
+import threading
 
-from sentence_transformers import (
-    SentenceTransformer,
-)
+import numpy as np
 
 
 # ============================================================
@@ -38,15 +36,19 @@ NORMALIZE_EMBEDDINGS = True
 # ============================================================
 
 # IMPORTANT:
-# The model is intentionally NOT loaded when this module
-# is imported.
 #
-# This prevents Render / production startup from being blocked
-# by the heavy SentenceTransformer model initialization.
+# Do NOT import SentenceTransformer at module level.
 #
-# The model will be loaded only when an embedding operation
-# actually requires it.
+# The package and model are loaded only when get_model()
+# is called. This keeps FastAPI/Uvicorn startup lightweight.
+#
+# This is especially useful for Render Free where the service
+# must bind to the assigned PORT quickly.
 _model = None
+
+# Prevent multiple simultaneous requests from loading the
+# model more than once.
+_model_lock = threading.Lock()
 
 
 # ============================================================
@@ -54,7 +56,7 @@ _model = None
 # ============================================================
 
 def _validate_model_dimension(
-    model: SentenceTransformer,
+    model: Any,
 ) -> None:
     """
     Verify that the loaded SentenceTransformer model produces
@@ -98,29 +100,27 @@ def _validate_model_dimension(
 # LAZY MODEL LOADING
 # ============================================================
 
-def get_model() -> SentenceTransformer:
+def get_model() -> Any:
     """
     Return the SentenceTransformer model.
 
-    The model is loaded lazily on the first call instead of
-    during module import.
-
-    This is important for cloud deployment environments such
-    as Render Free because the FastAPI application can start
-    and bind to its port before the embedding model is loaded.
+    The SentenceTransformer package and model are imported and
+    initialized only when an embedding operation actually needs
+    them.
 
     Returns:
         Loaded SentenceTransformer model.
 
     Raises:
         RuntimeError:
-            If the model cannot be loaded.
+            If the model cannot be loaded or validated.
     """
 
     global _model
 
     # --------------------------------------------------------
-    # Return already-loaded model
+    # Fast path:
+    # Return model if it has already been loaded.
     # --------------------------------------------------------
 
     if _model is not None:
@@ -128,73 +128,86 @@ def get_model() -> SentenceTransformer:
         return _model
 
     # --------------------------------------------------------
-    # Load model only when actually required
+    # Thread-safe initialization
     # --------------------------------------------------------
 
-    print()
-    print("=" * 72)
-    print("STUDYSPHERE EMBEDDING SERVICE")
-    print("=" * 72)
+    with _model_lock:
 
-    print(
-        "[Embedding] Loading model:",
-        MODEL_NAME,
-    )
+        # Another request may have loaded the model while
+        # waiting for the lock.
+        if _model is not None:
 
-    try:
+            return _model
 
-        loaded_model = SentenceTransformer(
-            MODEL_NAME
-        )
-
-    except Exception as error:
+        print()
+        print("=" * 72)
+        print("STUDYSPHERE EMBEDDING SERVICE")
+        print("=" * 72)
 
         print(
-            "[Embedding] Failed to load model:",
-            repr(error),
+            "[Embedding] Loading model:",
+            MODEL_NAME,
         )
 
-        raise RuntimeError(
-            "Unable to load the SentenceTransformer "
-            "embedding model."
-        ) from error
+        try:
 
-    # --------------------------------------------------------
-    # Validate model before making it globally available
-    # --------------------------------------------------------
+            # IMPORTANT:
+            # Heavy dependency import happens ONLY here.
+            from sentence_transformers import (
+                SentenceTransformer,
+            )
 
-    try:
+            loaded_model = SentenceTransformer(
+                MODEL_NAME
+            )
 
-        _validate_model_dimension(
-            loaded_model
+        except Exception as error:
+
+            print(
+                "[Embedding] Failed to load model:",
+                repr(error),
+            )
+
+            raise RuntimeError(
+                "Unable to load the SentenceTransformer "
+                "embedding model."
+            ) from error
+
+        # ----------------------------------------------------
+        # Validate model before storing it globally
+        # ----------------------------------------------------
+
+        try:
+
+            _validate_model_dimension(
+                loaded_model
+            )
+
+        except Exception:
+
+            loaded_model = None
+
+            raise
+
+        # ----------------------------------------------------
+        # Store validated model
+        # ----------------------------------------------------
+
+        _model = loaded_model
+
+        print(
+            "[Embedding] Model loaded successfully."
         )
 
-    except Exception:
+        print(
+            "[Embedding] Expected dimension:",
+            EXPECTED_EMBEDDING_DIMENSION,
+        )
 
-        # Do not keep an invalid model in memory.
-        loaded_model = None
+        print("=" * 72)
+        print()
 
-        raise
-
-    # --------------------------------------------------------
-    # Store validated model
-    # --------------------------------------------------------
-
-    _model = loaded_model
-
-    print(
-        "[Embedding] Model loaded successfully."
-    )
-
-    print(
-        "[Embedding] Expected dimension:",
-        EXPECTED_EMBEDDING_DIMENSION,
-    )
-
-    print("=" * 72)
-    print()
-
-    return _model
+        return _model
 
 
 # ============================================================
@@ -226,6 +239,10 @@ def _validate_text(
 
     return text
 
+
+# ============================================================
+# CHUNK VALIDATION
+# ============================================================
 
 def _validate_chunks(
     chunks: Sequence[str],
@@ -435,9 +452,7 @@ def generate_embeddings(
     # GET MODEL
     # ========================================================
 
-    # IMPORTANT:
-    # Model loads here only when the first embedding request
-    # is made.
+    # Model is loaded only when actually needed.
     model = get_model()
 
     # ========================================================
@@ -558,6 +573,10 @@ def generate_query_embedding(
     configuration as document embeddings.
     """
 
+    # ========================================================
+    # VALIDATE QUESTION
+    # ========================================================
+
     question = _validate_text(
         question
     )
@@ -570,8 +589,6 @@ def generate_query_embedding(
     # GET MODEL
     # ========================================================
 
-    # The model is loaded only when a query actually requires
-    # an embedding.
     model = get_model()
 
     # ========================================================
@@ -766,6 +783,17 @@ def cosine_similarity(
             f"Expected "
             f"{EXPECTED_EMBEDDING_DIMENSION}, "
             f"received {len(a)}."
+        )
+
+    if len(b) != (
+        EXPECTED_EMBEDDING_DIMENSION
+    ):
+
+        raise ValueError(
+            "vector_b has an unexpected dimension. "
+            f"Expected "
+            f"{EXPECTED_EMBEDDING_DIMENSION}, "
+            f"received {len(b)}."
         )
 
     # ========================================================
