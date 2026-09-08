@@ -34,63 +34,46 @@ NORMALIZE_EMBEDDINGS = True
 
 
 # ============================================================
-# MODEL INITIALIZATION
+# MODEL STATE
 # ============================================================
 
-print()
-print("=" * 72)
-print("STUDYSPHERE EMBEDDING SERVICE")
-print("=" * 72)
-print(
-    "[Embedding] Loading model:",
-    MODEL_NAME,
-)
-
-try:
-
-    _model = SentenceTransformer(
-        MODEL_NAME
-    )
-
-except Exception as error:
-
-    print(
-        "[Embedding] Failed to load model:",
-        repr(error),
-    )
-
-    raise RuntimeError(
-        "Unable to load the SentenceTransformer embedding model."
-    ) from error
-
-
-print(
-    "[Embedding] Model loaded successfully."
-)
-
-print(
-    "[Embedding] Expected dimension:",
-    EXPECTED_EMBEDDING_DIMENSION,
-)
-
-print("=" * 72)
-print()
+# IMPORTANT:
+# The model is intentionally NOT loaded when this module
+# is imported.
+#
+# This prevents Render / production startup from being blocked
+# by the heavy SentenceTransformer model initialization.
+#
+# The model will be loaded only when an embedding operation
+# actually requires it.
+_model = None
 
 
 # ============================================================
 # MODEL VALIDATION
 # ============================================================
 
-def _validate_model_dimension() -> None:
+def _validate_model_dimension(
+    model: SentenceTransformer,
+) -> None:
     """
     Verify that the loaded SentenceTransformer model produces
     the expected vector dimension.
+
+    Args:
+        model:
+            Loaded SentenceTransformer model.
+
+    Raises:
+        RuntimeError:
+            If the model dimension cannot be determined or
+            does not match the expected dimension.
     """
 
     try:
 
         actual_dimension = int(
-            _model.get_sentence_embedding_dimension()
+            model.get_sentence_embedding_dimension()
         )
 
     except Exception as error:
@@ -111,7 +94,107 @@ def _validate_model_dimension() -> None:
         )
 
 
-_validate_model_dimension()
+# ============================================================
+# LAZY MODEL LOADING
+# ============================================================
+
+def get_model() -> SentenceTransformer:
+    """
+    Return the SentenceTransformer model.
+
+    The model is loaded lazily on the first call instead of
+    during module import.
+
+    This is important for cloud deployment environments such
+    as Render Free because the FastAPI application can start
+    and bind to its port before the embedding model is loaded.
+
+    Returns:
+        Loaded SentenceTransformer model.
+
+    Raises:
+        RuntimeError:
+            If the model cannot be loaded.
+    """
+
+    global _model
+
+    # --------------------------------------------------------
+    # Return already-loaded model
+    # --------------------------------------------------------
+
+    if _model is not None:
+
+        return _model
+
+    # --------------------------------------------------------
+    # Load model only when actually required
+    # --------------------------------------------------------
+
+    print()
+    print("=" * 72)
+    print("STUDYSPHERE EMBEDDING SERVICE")
+    print("=" * 72)
+
+    print(
+        "[Embedding] Loading model:",
+        MODEL_NAME,
+    )
+
+    try:
+
+        loaded_model = SentenceTransformer(
+            MODEL_NAME
+        )
+
+    except Exception as error:
+
+        print(
+            "[Embedding] Failed to load model:",
+            repr(error),
+        )
+
+        raise RuntimeError(
+            "Unable to load the SentenceTransformer "
+            "embedding model."
+        ) from error
+
+    # --------------------------------------------------------
+    # Validate model before making it globally available
+    # --------------------------------------------------------
+
+    try:
+
+        _validate_model_dimension(
+            loaded_model
+        )
+
+    except Exception:
+
+        # Do not keep an invalid model in memory.
+        loaded_model = None
+
+        raise
+
+    # --------------------------------------------------------
+    # Store validated model
+    # --------------------------------------------------------
+
+    _model = loaded_model
+
+    print(
+        "[Embedding] Model loaded successfully."
+    )
+
+    print(
+        "[Embedding] Expected dimension:",
+        EXPECTED_EMBEDDING_DIMENSION,
+    )
+
+    print("=" * 72)
+    print()
+
+    return _model
 
 
 # ============================================================
@@ -349,12 +432,21 @@ def generate_embeddings(
     )
 
     # ========================================================
+    # GET MODEL
+    # ========================================================
+
+    # IMPORTANT:
+    # Model loads here only when the first embedding request
+    # is made.
+    model = get_model()
+
+    # ========================================================
     # GENERATE EMBEDDINGS
     # ========================================================
 
     try:
 
-        embeddings = _model.encode(
+        embeddings = model.encode(
             cleaned_chunks,
             batch_size=ENCODE_BATCH_SIZE,
             normalize_embeddings=(
@@ -475,12 +567,20 @@ def generate_query_embedding(
     )
 
     # ========================================================
+    # GET MODEL
+    # ========================================================
+
+    # The model is loaded only when a query actually requires
+    # an embedding.
+    model = get_model()
+
+    # ========================================================
     # GENERATE
     # ========================================================
 
     try:
 
-        embedding = _model.encode(
+        embedding = model.encode(
             question,
             normalize_embeddings=(
                 NORMALIZE_EMBEDDINGS
