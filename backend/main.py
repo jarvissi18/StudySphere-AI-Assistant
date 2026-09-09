@@ -1,6 +1,4 @@
 
-
-
 # ============================================================
 # STANDARD LIBRARY
 # ============================================================
@@ -94,53 +92,76 @@ import database.models
 # DOCUMENT EXTRACTION
 # ============================================================
 
-from services.pdf_utils import (
-    extract_text_from_pdf,
-)
-
-
 # ============================================================
-# TEXT CHUNKING
+# LAZY SERVICE IMPORTS
 # ============================================================
+# Keep heavy ML / ChromaDB / AI imports out of application startup.
+# Render must be able to bind the HTTP port quickly on the Free tier.
+# These services are imported only when their functionality is used.
 
-from services.chunking import (
-    chunk_text,
-)
-
-
-# ============================================================
-# EMBEDDINGS
-# ============================================================
-
-from services.embedding import (
-    generate_embeddings,
-    generate_query_embedding,
-)
+def extract_text_from_pdf(*args, **kwargs):
+    from services.pdf_utils import extract_text_from_pdf as _fn
+    return _fn(*args, **kwargs)
 
 
-# ============================================================
-# VECTOR STORE / CHROMADB
-# ============================================================
-
-from services.vector_store import (
-    store_chunks,
-    search_chunks,
-    delete_pdf_embeddings,
-)
+def chunk_text(*args, **kwargs):
+    from services.chunking import chunk_text as _fn
+    return _fn(*args, **kwargs)
 
 
-# ============================================================
-# GEMINI / AI SERVICE
-# ============================================================
+def generate_embeddings(*args, **kwargs):
+    from services.embedding import generate_embeddings as _fn
+    return _fn(*args, **kwargs)
 
-from services.gemini_service import (
-    generate_answer,
-    stream_answer,
-    generate_quiz_from_context,
-    generate_summary_from_context,
-    generate_notes_from_context,
-    generate_flashcards_from_context,
-)
+
+def generate_query_embedding(*args, **kwargs):
+    from services.embedding import generate_query_embedding as _fn
+    return _fn(*args, **kwargs)
+
+
+def store_chunks(*args, **kwargs):
+    from services.vector_store import store_chunks as _fn
+    return _fn(*args, **kwargs)
+
+
+def search_chunks(*args, **kwargs):
+    from services.vector_store import search_chunks as _fn
+    return _fn(*args, **kwargs)
+
+
+def delete_pdf_embeddings(*args, **kwargs):
+    from services.vector_store import delete_pdf_embeddings as _fn
+    return _fn(*args, **kwargs)
+
+
+def generate_answer(*args, **kwargs):
+    from services.gemini_service import generate_answer as _fn
+    return _fn(*args, **kwargs)
+
+
+def stream_answer(*args, **kwargs):
+    from services.gemini_service import stream_answer as _fn
+    return _fn(*args, **kwargs)
+
+
+def generate_quiz_from_context(*args, **kwargs):
+    from services.gemini_service import generate_quiz_from_context as _fn
+    return _fn(*args, **kwargs)
+
+
+def generate_summary_from_context(*args, **kwargs):
+    from services.gemini_service import generate_summary_from_context as _fn
+    return _fn(*args, **kwargs)
+
+
+def generate_notes_from_context(*args, **kwargs):
+    from services.gemini_service import generate_notes_from_context as _fn
+    return _fn(*args, **kwargs)
+
+
+def generate_flashcards_from_context(*args, **kwargs):
+    from services.gemini_service import generate_flashcards_from_context as _fn
+    return _fn(*args, **kwargs)
 
 
 from datetime import datetime, timezone
