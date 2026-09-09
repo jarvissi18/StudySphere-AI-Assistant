@@ -34,7 +34,7 @@ import { useAuth } from "../../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
-  const { loadUser } = useAuth();
+  const { setUser } = useAuth();
 
   // ============================================================
   // LOGIN STATE
@@ -126,13 +126,15 @@ function Login() {
       }
 
       localStorage.setItem(
-        "access_token",
-        response.access_token
-      );
+  "access_token",
+  response.access_token
+);
 
-      await loadUser();
+if (response.user) {
+  setUser(response.user);
+}
 
-      navigate("/");
+navigate("/");
 
     } catch (err) {
       console.error(
