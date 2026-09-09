@@ -34,6 +34,7 @@ from fastapi import (
     File,
     Depends,
     HTTPException,
+    BackgroundTasks,
 )
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -53,7 +54,10 @@ from pydantic import BaseModel
 # ============================================================
 
 from sqlalchemy.orm import Session
-
+from sqlalchemy import (
+    inspect,
+    text,
+)
 
 # ============================================================
 # AUTHENTICATION
@@ -74,6 +78,7 @@ from database.database import (
     get_db,
     engine,
     Base,
+    SessionLocal,
 )
 
 from database.models import (
@@ -136,6 +141,9 @@ from services.gemini_service import (
     generate_notes_from_context,
     generate_flashcards_from_context,
 )
+
+
+from datetime import datetime, timezone
 
 
 # ============================================================
@@ -207,6 +215,90 @@ app = FastAPI(
 Base.metadata.create_all(
     bind=engine
 )
+
+
+# ============================================================
+# DATABASE STATUS MIGRATION
+# ============================================================
+
+def ensure_document_status_columns():
+    """
+    Safely add document processing status columns to the
+    existing SQLite database without deleting existing data.
+    """
+
+    try:
+
+        inspector = inspect(engine)
+
+        existing_columns = {
+            column["name"]
+            for column in inspector.get_columns(
+                "documents"
+            )
+        }
+
+        with engine.begin() as connection:
+
+            if "status" not in existing_columns:
+
+                connection.execute(
+                    text(
+                        """
+                        ALTER TABLE documents
+                        ADD COLUMN status VARCHAR
+                        NOT NULL DEFAULT 'ready'
+                        """
+                    )
+                )
+
+                print(
+                    "[DATABASE] Added documents.status"
+                )
+
+            if "processing_error" not in existing_columns:
+
+                connection.execute(
+                    text(
+                        """
+                        ALTER TABLE documents
+                        ADD COLUMN processing_error TEXT
+                        """
+                    )
+                )
+
+                print(
+                    "[DATABASE] Added documents.processing_error"
+                )
+
+            if "processed_at" not in existing_columns:
+
+                connection.execute(
+                    text(
+                        """
+                        ALTER TABLE documents
+                        ADD COLUMN processed_at DATETIME
+                        """
+                    )
+                )
+
+                print(
+                    "[DATABASE] Added documents.processed_at"
+                )
+
+        print(
+            "[DATABASE] Document status migration complete."
+        )
+
+    except Exception as error:
+
+        print(
+            "[DATABASE] Document status migration failed:",
+            repr(error),
+        )
+
+
+ensure_document_status_columns()
 
 
 # ============================================================
@@ -1209,6 +1301,10 @@ def create_or_update_document_record(
     """
     Create a new document record or update the existing
     record for the same user + filename.
+
+    Every new upload starts in ``processing`` state.
+    The background ingestion task changes it to ``ready``
+    or ``failed``.
     """
 
     existing_document = (
@@ -1231,13 +1327,22 @@ def create_or_update_document_record(
             file_path
         )
 
+        existing_document.status = (
+            "processing"
+        )
+
+        existing_document.processing_error = None
+
+        existing_document.processed_at = None
+
         document = (
             existing_document
         )
 
         print(
             "[DATABASE] "
-            "Existing document record updated."
+            "Existing document record updated "
+            "and marked as processing."
         )
 
 
@@ -1246,6 +1351,9 @@ def create_or_update_document_record(
         document = Document(
             filename=filename,
             filepath=file_path,
+            status="processing",
+            processing_error=None,
+            processed_at=None,
             user_id=current_user.id,
         )
 
@@ -1255,7 +1363,8 @@ def create_or_update_document_record(
 
         print(
             "[DATABASE] "
-            "New document record created."
+            "New document record created "
+            "with processing status."
         )
 
 
@@ -1660,7 +1769,11 @@ def home():
         "message": (
             "StudySphere AI Backend Running 🚀"
         ),
-        "environment": "local",
+        "environment": (
+            "production"
+            if os.getenv("RENDER")
+            else "local"
+        ),
         "version": APP_VERSION,
     }
 
@@ -1682,12 +1795,191 @@ def health_check():
 
 
 # ============================================================
+# BACKGROUND DOCUMENT PROCESSING
+# ============================================================
+
+
+def process_uploaded_document(
+    document_id: int,
+    user_id: int,
+    filename: str,
+    file_path: str,
+):
+    """
+    Process an uploaded document outside the upload HTTP response.
+
+    Pipeline:
+
+        PDF
+          ↓
+        Extraction / OCR
+          ↓
+        Chunking
+          ↓
+        Embeddings
+          ↓
+        ChromaDB
+
+    The upload endpoint returns immediately after the file and
+    database record are saved. This function then updates the
+    document status to ``ready`` or ``failed``.
+    """
+
+    db = SessionLocal()
+
+    try:
+
+        print()
+        print("=" * 72)
+        print("BACKGROUND DOCUMENT PROCESSING")
+        print("=" * 72)
+
+        print(
+            f"[BACKGROUND] Document ID : {document_id}"
+        )
+
+        print(
+            f"[BACKGROUND] User ID     : {user_id}"
+        )
+
+        print(
+            f"[BACKGROUND] File        : {filename}"
+        )
+
+        # ====================================================
+        # FIND DOCUMENT
+        # ====================================================
+
+        document = (
+            db.query(Document)
+            .filter(
+                Document.id == document_id,
+                Document.user_id == user_id,
+            )
+            .first()
+        )
+
+        if not document:
+
+            print(
+                "[BACKGROUND] Document not found."
+            )
+
+            return
+
+        # ====================================================
+        # MARK AS PROCESSING
+        # ====================================================
+
+        document.status = "processing"
+        document.processing_error = None
+        document.processed_at = None
+
+        db.commit()
+
+        # ====================================================
+        # INDEX DOCUMENT
+        # ====================================================
+
+        print(
+            "[BACKGROUND] Starting document indexing..."
+        )
+
+        stats = index_document(
+            user_id=user_id,
+            filename=filename,
+            file_path=file_path,
+        )
+
+        print(
+            "[BACKGROUND] Indexing completed."
+        )
+
+        print(
+            "[BACKGROUND] Stats:",
+            stats,
+        )
+
+        # ====================================================
+        # MARK AS READY
+        # ====================================================
+
+        document.status = "ready"
+        document.processing_error = None
+        document.processed_at = datetime.now(
+            timezone.utc
+        )
+
+        db.commit()
+
+        print(
+            "[BACKGROUND] Document is READY."
+        )
+
+        print("=" * 72)
+
+    except Exception as error:
+
+        print()
+        print("=" * 72)
+        print("BACKGROUND DOCUMENT PROCESSING FAILED")
+        print("=" * 72)
+
+        print(
+            "[BACKGROUND ERROR]",
+            repr(error),
+        )
+
+        # ====================================================
+        # MARK AS FAILED
+        # ====================================================
+
+        try:
+
+            document = (
+                db.query(Document)
+                .filter(
+                    Document.id == document_id,
+                    Document.user_id == user_id,
+                )
+                .first()
+            )
+
+            if document:
+
+                document.status = "failed"
+
+                document.processing_error = (
+                    str(error)[:2000]
+                )
+
+                db.commit()
+
+        except Exception as db_error:
+
+            db.rollback()
+
+            print(
+                "[BACKGROUND] "
+                "Unable to update failed status:",
+                repr(db_error),
+            )
+
+        print("=" * 72)
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
 # UPLOAD DOCUMENT
 # ============================================================
 
 
 @app.post("/upload")
 async def upload_document(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     current_user: User = Depends(
         get_current_user
@@ -1697,12 +1989,23 @@ async def upload_document(
     ),
 ):
     """
-    Upload and index a study PDF.
+    Upload a study PDF and start document indexing in the
+    background.
 
-    STRICT PIPELINE:
+    Fast request path:
 
-        Upload
+        Validate
           ↓
+        Save file
+          ↓
+        Save database record
+          ↓
+        Queue background processing
+          ↓
+        Return immediately
+
+    Background path:
+
         PDF extraction / OCR
           ↓
         Text
@@ -1872,39 +2175,46 @@ async def upload_document(
 
 
     # ========================================================
-    # RAG INGESTION
+    # BACKGROUND DOCUMENT PROCESSING
     # ========================================================
 
     try:
 
-        stats = index_document(
+        background_tasks.add_task(
+            process_uploaded_document,
+            document_id=document.id,
             user_id=current_user.id,
             filename=saved_filename,
             file_path=file_path,
         )
 
+        print(
+            "[UPLOAD] Background processing scheduled."
+        )
 
     except Exception as error:
 
-        print()
-
-        print("=" * 72)
-        print("DOCUMENT INGESTION FAILED")
-        print("=" * 72)
-
-
         print(
-            "[INGESTION ERROR]",
+            "[UPLOAD] Unable to schedule background processing:",
             repr(error),
         )
 
+        try:
 
-        print("=" * 72)
+            db.delete(
+                document
+            )
 
+            db.commit()
 
-        # ----------------------------------------------------
-        # Remove physical file
-        # ----------------------------------------------------
+        except Exception as cleanup_error:
+
+            db.rollback()
+
+            print(
+                "[CLEANUP] Database cleanup failed:",
+                repr(cleanup_error),
+            )
 
         try:
 
@@ -1919,47 +2229,20 @@ async def upload_document(
         except Exception as cleanup_error:
 
             print(
-                "[CLEANUP] "
-                "File removal failed:",
+                "[CLEANUP] File removal failed:",
                 repr(cleanup_error),
             )
-
-
-        # ----------------------------------------------------
-        # Remove database record
-        # ----------------------------------------------------
-
-        try:
-
-            db.delete(
-                document
-            )
-
-            db.commit()
-
-
-        except Exception as cleanup_error:
-
-            db.rollback()
-
-            print(
-                "[CLEANUP] "
-                "Database rollback failed:",
-                repr(cleanup_error),
-            )
-
 
         raise HTTPException(
             status_code=500,
             detail=(
-                "Document processing failed. "
-                f"{str(error)}"
+                "Unable to start document processing."
             ),
         ) from error
 
 
     # ========================================================
-    # RESPONSE
+    # IMMEDIATE RESPONSE
     # ========================================================
 
     total_upload_time = (
@@ -1971,19 +2254,21 @@ async def upload_document(
     print()
 
     print("=" * 72)
-    print("DOCUMENT UPLOAD SUCCESSFUL")
+    print("DOCUMENT UPLOAD ACCEPTED")
     print("=" * 72)
-
 
     print(
         f"[UPLOAD] File: {saved_filename}"
     )
 
     print(
-        "[UPLOAD] Total time: "
+        "[UPLOAD] Request time: "
         f"{total_upload_time:.2f}s"
     )
 
+    print(
+        "[UPLOAD] Processing continues in background."
+    )
 
     print("=" * 72)
 
@@ -1991,19 +2276,21 @@ async def upload_document(
     return {
         "success": True,
         "message": (
-            "Document uploaded and indexed successfully."
+            "Document uploaded successfully. "
+            "Processing has started in the background."
         ),
         "document": {
             "id": document.id,
             "filename": saved_filename,
             "type": document_type,
+            "status": "processing",
         },
-        "indexing": stats,
     }
 
 
 # ============================================================
 # GET UPLOADED FILES
+
 # ============================================================
 
 
@@ -2063,6 +2350,16 @@ def get_uploaded_files(
                 "uploaded_at": (
                     document.uploaded_at
                 ),
+                "status": (
+                    document.status
+                    or "ready"
+                ),
+                "processing_error": (
+                    document.processing_error
+                ),
+                "processed_at": (
+                    document.processed_at
+                ),
             }
         )
 
@@ -2071,6 +2368,58 @@ def get_uploaded_files(
         "success": True,
         "files": files,
         "total": len(files),
+    }
+
+
+# ============================================================
+# DOCUMENT PROCESSING STATUS
+# ============================================================
+
+
+@app.get("/upload-status/{document_id}")
+def get_upload_status(
+    document_id: int,
+    current_user: User = Depends(
+        get_current_user
+    ),
+    db: Session = Depends(
+        get_db
+    ),
+):
+    """Return the processing status of one user-owned document."""
+
+    document = (
+        db.query(Document)
+        .filter(
+            Document.id == document_id,
+            Document.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not document:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found.",
+        )
+
+    return {
+        "success": True,
+        "document": {
+            "id": document.id,
+            "filename": document.filename,
+            "status": (
+                document.status
+                or "ready"
+            ),
+            "processing_error": (
+                document.processing_error
+            ),
+            "processed_at": (
+                document.processed_at
+            ),
+        },
     }
 
 
