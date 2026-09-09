@@ -64,7 +64,6 @@ class User(Base):
 # ==========================================================
 
 class Document(Base):
-
     __tablename__ = "documents"
 
     id = Column(
@@ -83,6 +82,22 @@ class Document(Base):
         nullable=False,
     )
 
+    status = Column(
+        String,
+        nullable=False,
+        default="ready",
+    )
+
+    processing_error = Column(
+        Text,
+        nullable=True,
+    )
+
+    processed_at = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
     user_id = Column(
         Integer,
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -98,5 +113,3 @@ class Document(Base):
         "User",
         back_populates="documents",
     )
-
-
