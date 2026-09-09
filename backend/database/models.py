@@ -56,14 +56,13 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
-   
-
 
 # ==========================================================
 # Document Model
 # ==========================================================
 
 class Document(Base):
+
     __tablename__ = "documents"
 
     id = Column(
@@ -81,6 +80,10 @@ class Document(Base):
         String,
         nullable=False,
     )
+
+    # ------------------------------------------------------
+    # Document Processing Status
+    # ------------------------------------------------------
 
     status = Column(
         String,
@@ -100,7 +103,10 @@ class Document(Base):
 
     user_id = Column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE"),
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
         nullable=False,
     )
 
@@ -109,6 +115,7 @@ class Document(Base):
         server_default=func.now(),
     )
 
+    # Relationships
     user = relationship(
         "User",
         back_populates="documents",
