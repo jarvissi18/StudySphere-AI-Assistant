@@ -13,9 +13,15 @@ const AuthContext = createContext(null);
 const USER_STORAGE_KEY = "studysphere_user";
 const TOKEN_STORAGE_KEY = "access_token";
 
+// ============================================================
+// GET CACHED USER
+// ============================================================
+
 function getStoredUser() {
   try {
-    const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+    const storedUser = localStorage.getItem(
+      USER_STORAGE_KEY
+    );
 
     if (!storedUser) {
       return null;
@@ -29,25 +35,30 @@ function getStoredUser() {
     );
 
     localStorage.removeItem(USER_STORAGE_KEY);
+
     return null;
   }
 }
 
+// ============================================================
+// AUTH PROVIDER
+// ============================================================
+
 export function AuthProvider({ children }) {
   /*
-   * IMPORTANT:
    * Restore cached user immediately.
    *
-   * This prevents the dashboard from disappearing
-   * during every browser refresh.
+   * This keeps the dashboard visible during refresh.
    */
   const [user, setUser] = useState(() =>
     getStoredUser()
   );
 
   /*
-   * Do NOT block the entire application while
-   * /auth/me is being checked.
+   * Authentication verification happens
+   * in the background.
+   *
+   * The UI should NOT wait for /auth/me.
    */
   const [loading, setLoading] = useState(false);
 
@@ -64,7 +75,9 @@ export function AuthProvider({ children }) {
         JSON.stringify(userData)
       );
     } else {
-      localStorage.removeItem(USER_STORAGE_KEY);
+      localStorage.removeItem(
+        USER_STORAGE_KEY
+      );
     }
   }, []);
 
@@ -78,7 +91,7 @@ export function AuthProvider({ children }) {
     );
 
     /*
-     * No token = definitely logged out.
+     * No token means the user is logged out.
      */
     if (!token) {
       updateUser(null);
@@ -87,21 +100,33 @@ export function AuthProvider({ children }) {
     }
 
     /*
-     * We already have cached user information.
+     * IMPORTANT:
      *
-     * Keep the UI available while verification happens
-     * in the background.
+     * Do not block the dashboard.
+     *
+     * Cached user is already available.
      */
     setLoading(false);
 
     try {
       const response = await getCurrentUser();
 
+      /*
+       * Normal backend response:
+       *
+       * {
+       *   success: true,
+       *   user: {...}
+       * }
+       */
       if (response?.success && response?.user) {
         updateUser(response.user);
         return response.user;
       }
 
+      /*
+       * Also support direct user response.
+       */
       if (response?.user) {
         updateUser(response.user);
         return response.user;
@@ -110,23 +135,25 @@ export function AuthProvider({ children }) {
       /*
        * Unexpected response.
        *
-       * Do NOT destroy the session just because the response
-       * format was unexpected.
+       * Do NOT log the user out.
        */
       console.warn(
         "StudySphere: Unexpected /auth/me response."
       );
 
-      return user;
+      return getStoredUser();
+
     } catch (error) {
-      const status = error?.response?.status;
+      const status =
+        error?.response?.status;
 
       /*
-       * ONLY a 401 means the JWT is actually invalid/expired.
-       *
-       * In that case we must log the user out.
+       * ONLY 401 means the JWT is invalid/expired.
        */
-      if (status === 401) {
+      if (
+        status === 401 ||
+        status === 403
+      ) {
         console.warn(
           "StudySphere: Session expired."
         );
@@ -135,11 +162,7 @@ export function AuthProvider({ children }) {
           TOKEN_STORAGE_KEY
         );
 
-        localStorage.removeItem(
-          USER_STORAGE_KEY
-        );
-
-        setUser(null);
+        updateUser(null);
 
         return null;
       }
@@ -147,20 +170,21 @@ export function AuthProvider({ children }) {
       /*
        * Network error / Render cold start / 5xx:
        *
-       * DO NOT log the user out.
+       * NEVER log the user out.
        *
-       * The cached session remains available.
+       * Keep cached session.
        */
       console.warn(
         "StudySphere: Session verification temporarily unavailable.",
         error
       );
 
-      return user;
+      return getStoredUser();
+
     } finally {
       setLoading(false);
     }
-  }, [updateUser, user]);
+  }, [updateUser]);
 
   // ============================================================
   // INITIAL SESSION RESTORE
@@ -171,6 +195,9 @@ export function AuthProvider({ children }) {
       TOKEN_STORAGE_KEY
     );
 
+    /*
+     * No token → logged out.
+     */
     if (!token) {
       setUser(null);
       setLoading(false);
@@ -178,12 +205,17 @@ export function AuthProvider({ children }) {
     }
 
     /*
-     * Verify in the background.
+     * Verify session in background.
      *
-     * The dashboard does NOT wait for this request.
+     * IMPORTANT:
+     *
+     * loadUser is now stable because it does
+     * NOT depend on `user`.
      */
     loadUser();
-  }, [loadUser]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ============================================================
   // CONTEXT
