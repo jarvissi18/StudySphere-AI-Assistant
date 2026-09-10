@@ -1636,18 +1636,44 @@ def index_document(
 
     if len(embeddings) != len(
         chunks
-    ):
-
+        ):
         raise ValueError(
             "Embedding count does not match "
             "chunk count."
         )
 
-
-    embedding_dimension = len(
-        embeddings[0]
+    print(
+        "[DEBUG] Embedding count validation passed.",
+        flush=True
     )
 
+    print(
+        "[DEBUG] Accessing first embedding...",
+        flush=True
+    )
+
+    first_embedding = embeddings[0]
+
+    print(
+        "[DEBUG] First embedding accessed successfully.",
+        flush=True
+    )
+
+    print(
+        "[DEBUG] First embedding type:",
+        type(first_embedding).__name__,
+        flush=True
+    )
+
+    embedding_dimension = len(
+        first_embedding
+    )
+
+    print(
+        "[DEBUG] Embedding dimension calculated:",
+        embedding_dimension,
+        flush=True
+    )
 
     print(
         "[3/4] "
