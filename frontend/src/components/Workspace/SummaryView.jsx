@@ -60,8 +60,9 @@ function SummaryView() {
       setCopied(false);
 
       const response = await generateSummary({
-        topic: "",
-      });
+  topic:
+    "important concepts definitions key topics explanations examples formulas facts from the uploaded study material",
+});
 
       if (!response?.success) {
         setSummary("");
