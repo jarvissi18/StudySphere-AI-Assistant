@@ -1594,8 +1594,26 @@ def index_document(
             chunks
         )
     )
+    
+    print(
+        "[DEBUG] generate_embeddings() returned successfully.",
+        flush=True
+    )
 
+    print(
+        "[DEBUG] Embedding return type:",
+        type(embeddings).__name__,
+        flush=True
+    )
 
+    print(
+        "[DEBUG] Embedding count received:",
+        len(embeddings)
+        if embeddings is not None
+        else "None",
+        flush=True
+    )
+    
     embedding_time = (
         time.perf_counter()
         - embedding_start
