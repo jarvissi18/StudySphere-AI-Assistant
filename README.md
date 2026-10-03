@@ -910,14 +910,19 @@ See the [LICENSE](LICENSE) file for details.
 ---
 <div align="center">
 
-# 👨‍💻 Author
+<br />
 
-## Swapnil Suryawanshi
+**Author**
 
-**Computer Engineering Student · Full-Stack Developer**
+### Suryawanshi Swapnil
 
----
+Computer Engineering Student · Full-Stack Developer
+
+[![GitHub](https://img.shields.io/badge/GitHub-@jarvissi18-181717?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/jarvissi18)
+
 </div>
+
+
 # 🙏 Acknowledgements
 
 Built with the help of these technologies and open-source projects:
