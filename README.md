@@ -1,3 +1,5 @@
+<div align="center">
+
 # ✦ StudySphere AI Assistant
 
 ### Learn smarter. Revise faster. Understand better.
@@ -20,7 +22,9 @@ Upload your study material, ask questions, generate summaries and notes, create 
 
 </p>
 
+
 ---
+</div>
 
 ## 🚀 Live Demo
 
@@ -904,6 +908,7 @@ This project is licensed under the **MIT License**.
 See the [LICENSE](LICENSE) file for details.
 
 ---
+<div align="center">
 
 # 👨‍💻 Author
 
@@ -911,12 +916,8 @@ See the [LICENSE](LICENSE) file for details.
 
 **Computer Engineering Student · Full-Stack Developer**
 
-Interested in building practical applications using:
-
-`AI` · `RAG` · `FastAPI` · `React` · `Python` · `Databases`
-
 ---
-
+</div>
 # 🙏 Acknowledgements
 
 Built with the help of these technologies and open-source projects:
@@ -932,19 +933,10 @@ Built with the help of these technologies and open-source projects:
 
 ---
 
-# ⭐ Support the Project
 
-If you find StudySphere useful or interesting:
-
-⭐ **Star the repository**
-
-🐛 **Report issues**
-
-💡 **Suggest improvements**
-
-🤝 **Contribute**
 
 ---
+<div align="center">
 
 <p align="center">
 
@@ -955,3 +947,4 @@ If you find StudySphere useful or interesting:
 Built with ❤️ using modern AI and full-stack technologies.
 
 </p>
+</div>
